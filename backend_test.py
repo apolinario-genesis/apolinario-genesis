@@ -338,7 +338,7 @@ class BackendTester:
         print("\n=== Testing Invalid Login ===")
         
         invalid_login = {
-            "email": "joao.silva@sacredbond.test",
+            "email": "joao.silva@gmail.com",
             "password": "SenhaErrada123"
         }
         
