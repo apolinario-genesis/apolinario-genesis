@@ -215,7 +215,7 @@ class BackendTester:
                 
                 if response.status_code == 200:
                     data = response.json()
-                    if data["name"] == "Maria Santos" and data["email"] == "maria.santos@sacredbond.test":
+                    if data["name"] == "Maria Santos" and data["email"] == "maria.santos@gmail.com":
                         self.log_test("Maria Get Info", True, "User info retrieved successfully")
                     else:
                         self.log_test("Maria Get Info", False, "Incorrect user data", data)
