@@ -57,6 +57,10 @@ export default function DashboardScreen() {
     );
   };
 
+  const navigateToFeature = (route: string) => {
+    router.push(route);
+  };
+
   if (isLoading) {
     return (
       <SafeAreaView style={styles.container}>
@@ -102,7 +106,7 @@ export default function DashboardScreen() {
         <View style={styles.featuresGrid}>
           <TouchableOpacity 
             style={styles.featureCard}
-            onPress={() => Alert.alert('Em breve', 'Esta funcionalidade está sendo desenvolvida! 💕')}
+            onPress={() => navigateToFeature('/(features)/love-wall')}
           >
             <View style={styles.featureIconContainer}>
               <Text style={styles.featureIcon}>💝</Text>
@@ -115,7 +119,7 @@ export default function DashboardScreen() {
 
           <TouchableOpacity 
             style={styles.featureCard}
-            onPress={() => Alert.alert('Em breve', 'Esta funcionalidade está sendo desenvolvida! 📅')}
+            onPress={() => navigateToFeature('/(features)/calendar')}
           >
             <View style={styles.featureIconContainer}>
               <Text style={styles.featureIcon}>📅</Text>
@@ -128,7 +132,7 @@ export default function DashboardScreen() {
 
           <TouchableOpacity 
             style={styles.featureCard}
-            onPress={() => Alert.alert('Em breve', 'Esta funcionalidade está sendo desenvolvida! 📝')}
+            onPress={() => navigateToFeature('/(features)/diary')}
           >
             <View style={styles.featureIconContainer}>
               <Text style={styles.featureIcon}>📝</Text>
@@ -141,7 +145,7 @@ export default function DashboardScreen() {
 
           <TouchableOpacity 
             style={styles.featureCard}
-            onPress={() => Alert.alert('Em breve', 'Esta funcionalidade está sendo desenvolvida! 📖')}
+            onPress={() => navigateToFeature('/(features)/spiritual')}
           >
             <View style={styles.featureIconContainer}>
               <Text style={styles.featureIcon}>📖</Text>
