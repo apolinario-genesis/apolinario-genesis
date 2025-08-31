@@ -121,7 +121,7 @@ class BackendTester:
         
         # Test João login
         login_data = {
-            "email": "joao.silva@sacredbond.test",
+            "email": "joao.silva@gmail.com",
             "password": "MinhaSenh@123"
         }
         
