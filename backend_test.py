@@ -43,7 +43,7 @@ class BackendTester:
         # Test User 1 (João)
         user1_data = {
             "name": "João Silva",
-            "email": "joao.silva@sacredbond.test",
+            "email": "joao.silva@gmail.com",
             "password": "MinhaSenh@123"
         }
         
