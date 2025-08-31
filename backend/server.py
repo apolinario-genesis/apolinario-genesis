@@ -33,12 +33,12 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 security = HTTPBearer()
 
 # Create the main app without a prefix
-app = FastAPI(title="Sacred Bond - Couples App API", version="1.0.0")
+app = FastAPI(title="Nosso Diário - Couples App API", version="1.0.0")
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
-# Pydantic Models
+# Pydantic Models - Users
 class UserBase(BaseModel):
     name: str = Field(..., min_length=2, max_length=50)
     email: EmailStr
@@ -64,6 +64,77 @@ class Token(BaseModel):
     access_token: str
     token_type: str
     user: UserResponse
+
+# Pydantic Models - Mural do Amor
+class LoveMessageCreate(BaseModel):
+    message: str = Field(..., min_length=1, max_length=500)
+    message_type: str = Field(default="message")  # message, quote, declaration
+
+class LoveMessageResponse(BaseModel):
+    id: str
+    sender_id: str
+    sender_name: str
+    recipient_id: str
+    message: str
+    message_type: str
+    created_at: datetime
+
+# Pydantic Models - Agenda do Casal
+class EventCreate(BaseModel):
+    title: str = Field(..., min_length=1, max_length=100)
+    description: Optional[str] = Field(None, max_length=300)
+    event_date: datetime
+    event_type: str = Field(default="general")  # general, anniversary, date, religious
+    is_reminder: bool = Field(default=True)
+
+class EventResponse(BaseModel):
+    id: str
+    title: str
+    description: Optional[str]
+    event_date: datetime
+    event_type: str
+    is_reminder: bool
+    created_by: str
+    created_by_name: str
+    created_at: datetime
+
+# Pydantic Models - Diário Compartilhado
+class DiaryEntryCreate(BaseModel):
+    title: str = Field(..., min_length=1, max_length=100)
+    content: str = Field(..., min_length=1, max_length=2000)
+    photos: Optional[List[str]] = Field(default=None)  # base64 images
+    mood: Optional[str] = Field(default="happy")  # happy, grateful, excited, peaceful, romantic
+    location: Optional[str] = Field(None, max_length=100)
+
+class DiaryEntryResponse(BaseModel):
+    id: str
+    title: str
+    content: str
+    photos: Optional[List[str]]
+    mood: Optional[str]
+    location: Optional[str]
+    created_by: str
+    created_by_name: str
+    created_at: datetime
+
+# Pydantic Models - Espaço Espiritual
+class SpiritualContentCreate(BaseModel):
+    content_type: str  # prayer, reflection, verse_study
+    title: str = Field(..., min_length=1, max_length=100)
+    content: str = Field(..., min_length=1, max_length=1000)
+    bible_verse: Optional[str] = Field(None, max_length=200)
+    bible_reference: Optional[str] = Field(None, max_length=50)
+
+class SpiritualContentResponse(BaseModel):
+    id: str
+    content_type: str
+    title: str
+    content: str
+    bible_verse: Optional[str]
+    bible_reference: Optional[str]
+    created_by: str
+    created_by_name: str
+    created_at: datetime
 
 # Utility functions
 def verify_password(plain_password, hashed_password):
@@ -104,6 +175,15 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
     if user is None:
         raise credentials_exception
     return user
+
+async def verify_couple(current_user):
+    """Verify user has a partner"""
+    if not current_user.get("partner_id"):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="User must have a partner to access this feature"
+        )
+    return current_user
 
 # Auth Routes
 @api_router.post("/auth/register", response_model=Token)
@@ -241,6 +321,232 @@ async def get_me(current_user = Depends(get_current_user)):
         couple_code=current_user.get("couple_code"),
         created_at=current_user["created_at"]
     )
+
+# Mural do Amor Routes
+@api_router.post("/love-messages", response_model=LoveMessageResponse)
+async def create_love_message(message: LoveMessageCreate, current_user = Depends(get_current_user)):
+    await verify_couple(current_user)
+    
+    partner = await db.users.find_one({"_id": ObjectId(current_user["partner_id"])})
+    if not partner:
+        raise HTTPException(status_code=404, detail="Partner not found")
+    
+    message_dict = {
+        "_id": ObjectId(),
+        "sender_id": ObjectId(current_user["_id"]),
+        "recipient_id": ObjectId(current_user["partner_id"]),
+        "message": message.message,
+        "message_type": message.message_type,
+        "created_at": datetime.utcnow()
+    }
+    
+    await db.love_messages.insert_one(message_dict)
+    
+    return LoveMessageResponse(
+        id=str(message_dict["_id"]),
+        sender_id=str(current_user["_id"]),
+        sender_name=current_user["name"],
+        recipient_id=str(current_user["partner_id"]),
+        message=message_dict["message"],
+        message_type=message_dict["message_type"],
+        created_at=message_dict["created_at"]
+    )
+
+@api_router.get("/love-messages", response_model=List[LoveMessageResponse])
+async def get_love_messages(current_user = Depends(get_current_user)):
+    await verify_couple(current_user)
+    
+    messages = await db.love_messages.find({
+        "$or": [
+            {"sender_id": ObjectId(current_user["_id"])},
+            {"recipient_id": ObjectId(current_user["_id"])}
+        ]
+    }).sort("created_at", -1).to_list(100)
+    
+    result = []
+    for msg in messages:
+        sender = await db.users.find_one({"_id": msg["sender_id"]})
+        result.append(LoveMessageResponse(
+            id=str(msg["_id"]),
+            sender_id=str(msg["sender_id"]),
+            sender_name=sender["name"] if sender else "Unknown",
+            recipient_id=str(msg["recipient_id"]),
+            message=msg["message"],
+            message_type=msg["message_type"],
+            created_at=msg["created_at"]
+        ))
+    
+    return result
+
+# Agenda do Casal Routes
+@api_router.post("/events", response_model=EventResponse)
+async def create_event(event: EventCreate, current_user = Depends(get_current_user)):
+    await verify_couple(current_user)
+    
+    event_dict = {
+        "_id": ObjectId(),
+        "title": event.title,
+        "description": event.description,
+        "event_date": event.event_date,
+        "event_type": event.event_type,
+        "is_reminder": event.is_reminder,
+        "created_by": ObjectId(current_user["_id"]),
+        "couple_id": [ObjectId(current_user["_id"]), ObjectId(current_user["partner_id"])],
+        "created_at": datetime.utcnow()
+    }
+    
+    await db.events.insert_one(event_dict)
+    
+    return EventResponse(
+        id=str(event_dict["_id"]),
+        title=event_dict["title"],
+        description=event_dict["description"],
+        event_date=event_dict["event_date"],
+        event_type=event_dict["event_type"],
+        is_reminder=event_dict["is_reminder"],
+        created_by=str(current_user["_id"]),
+        created_by_name=current_user["name"],
+        created_at=event_dict["created_at"]
+    )
+
+@api_router.get("/events", response_model=List[EventResponse])
+async def get_events(current_user = Depends(get_current_user)):
+    await verify_couple(current_user)
+    
+    events = await db.events.find({
+        "couple_id": {"$in": [ObjectId(current_user["_id"])]}
+    }).sort("event_date", 1).to_list(100)
+    
+    result = []
+    for event in events:
+        creator = await db.users.find_one({"_id": event["created_by"]})
+        result.append(EventResponse(
+            id=str(event["_id"]),
+            title=event["title"],
+            description=event.get("description"),
+            event_date=event["event_date"],
+            event_type=event["event_type"],
+            is_reminder=event["is_reminder"],
+            created_by=str(event["created_by"]),
+            created_by_name=creator["name"] if creator else "Unknown",
+            created_at=event["created_at"]
+        ))
+    
+    return result
+
+# Diário Compartilhado Routes
+@api_router.post("/diary-entries", response_model=DiaryEntryResponse)
+async def create_diary_entry(entry: DiaryEntryCreate, current_user = Depends(get_current_user)):
+    await verify_couple(current_user)
+    
+    entry_dict = {
+        "_id": ObjectId(),
+        "title": entry.title,
+        "content": entry.content,
+        "photos": entry.photos,
+        "mood": entry.mood,
+        "location": entry.location,
+        "created_by": ObjectId(current_user["_id"]),
+        "couple_id": [ObjectId(current_user["_id"]), ObjectId(current_user["partner_id"])],
+        "created_at": datetime.utcnow()
+    }
+    
+    await db.diary_entries.insert_one(entry_dict)
+    
+    return DiaryEntryResponse(
+        id=str(entry_dict["_id"]),
+        title=entry_dict["title"],
+        content=entry_dict["content"],
+        photos=entry_dict["photos"],
+        mood=entry_dict["mood"],
+        location=entry_dict["location"],
+        created_by=str(current_user["_id"]),
+        created_by_name=current_user["name"],
+        created_at=entry_dict["created_at"]
+    )
+
+@api_router.get("/diary-entries", response_model=List[DiaryEntryResponse])
+async def get_diary_entries(current_user = Depends(get_current_user)):
+    await verify_couple(current_user)
+    
+    entries = await db.diary_entries.find({
+        "couple_id": {"$in": [ObjectId(current_user["_id"])]}
+    }).sort("created_at", -1).to_list(100)
+    
+    result = []
+    for entry in entries:
+        creator = await db.users.find_one({"_id": entry["created_by"]})
+        result.append(DiaryEntryResponse(
+            id=str(entry["_id"]),
+            title=entry["title"],
+            content=entry["content"],
+            photos=entry.get("photos"),
+            mood=entry.get("mood"),
+            location=entry.get("location"),
+            created_by=str(entry["created_by"]),
+            created_by_name=creator["name"] if creator else "Unknown",
+            created_at=entry["created_at"]
+        ))
+    
+    return result
+
+# Espaço Espiritual Routes
+@api_router.post("/spiritual-content", response_model=SpiritualContentResponse)
+async def create_spiritual_content(content: SpiritualContentCreate, current_user = Depends(get_current_user)):
+    await verify_couple(current_user)
+    
+    content_dict = {
+        "_id": ObjectId(),
+        "content_type": content.content_type,
+        "title": content.title,
+        "content": content.content,
+        "bible_verse": content.bible_verse,
+        "bible_reference": content.bible_reference,
+        "created_by": ObjectId(current_user["_id"]),
+        "couple_id": [ObjectId(current_user["_id"]), ObjectId(current_user["partner_id"])],
+        "created_at": datetime.utcnow()
+    }
+    
+    await db.spiritual_content.insert_one(content_dict)
+    
+    return SpiritualContentResponse(
+        id=str(content_dict["_id"]),
+        content_type=content_dict["content_type"],
+        title=content_dict["title"],
+        content=content_dict["content"],
+        bible_verse=content_dict["bible_verse"],
+        bible_reference=content_dict["bible_reference"],
+        created_by=str(current_user["_id"]),
+        created_by_name=current_user["name"],
+        created_at=content_dict["created_at"]
+    )
+
+@api_router.get("/spiritual-content", response_model=List[SpiritualContentResponse])
+async def get_spiritual_content(content_type: Optional[str] = None, current_user = Depends(get_current_user)):
+    await verify_couple(current_user)
+    
+    query = {"couple_id": {"$in": [ObjectId(current_user["_id"])]}}
+    if content_type:
+        query["content_type"] = content_type
+    
+    contents = await db.spiritual_content.find(query).sort("created_at", -1).to_list(100)
+    
+    result = []
+    for content in contents:
+        creator = await db.users.find_one({"_id": content["created_by"]})
+        result.append(SpiritualContentResponse(
+            id=str(content["_id"]),
+            content_type=content["content_type"],
+            title=content["title"],
+            content=content["content"],
+            bible_verse=content.get("bible_verse"),
+            bible_reference=content.get("bible_reference"),
+            created_by=str(content["created_by"]),
+            created_by_name=creator["name"] if creator else "Unknown",
+            created_at=content["created_at"]
+        ))
+    
+    return result
 
 # Include the router in the main app
 app.include_router(api_router)
