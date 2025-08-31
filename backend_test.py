@@ -8,6 +8,8 @@ import requests
 import json
 import sys
 from datetime import datetime
+import random
+import string
 
 # Backend URL from frontend/.env
 BACKEND_URL = "https://sacredbond.preview.emergentagent.com/api"
