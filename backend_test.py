@@ -310,7 +310,7 @@ class BackendTester:
         
         duplicate_user = {
             "name": "João Duplicate",
-            "email": "joao.silva@sacredbond.test",  # Same email as user 1
+            "email": "joao.silva@gmail.com",  # Same email as user 1
             "password": "OutraSenh@789"
         }
         
