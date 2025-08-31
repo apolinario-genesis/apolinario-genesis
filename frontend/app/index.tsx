@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ResponsiveContainer from './components/ui/ResponsiveContainer';
+import Card from './components/ui/Card';
 
 const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 
@@ -52,9 +54,11 @@ export default function WelcomeScreen() {
   if (isLoading) {
     return (
       <SafeAreaView style={styles.container}>
-        <View style={styles.loadingContainer}>
-          <Text style={styles.loadingText}>Carregando...</Text>
-        </View>
+        <ResponsiveContainer>
+          <View style={styles.loadingContainer}>
+            <Text style={styles.loadingText}>Carregando...</Text>
+          </View>
+        </ResponsiveContainer>
       </SafeAreaView>
     );
   }
@@ -62,71 +66,76 @@ export default function WelcomeScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="dark" />
-      <KeyboardAvoidingView 
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.container}
-      >
-        <View style={styles.content}>
-          {/* Header */}
-          <View style={styles.header}>
-            <View style={styles.logoContainer}>
-              <Text style={styles.heartIcon}>💕</Text>
+      <ResponsiveContainer>
+        <KeyboardAvoidingView 
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.container}
+        >
+          <View style={styles.content}>
+            {/* Header */}
+            <View style={styles.header}>
+              <View style={styles.logoContainer}>
+                <Text style={styles.heartIcon}>💕</Text>
+              </View>
+              <Text style={styles.title}>Nosso Diário</Text>
+              <Text style={styles.subtitle}>Aplicativo para Casais Cristãos</Text>
+              <Text style={styles.verse}>
+                "Portanto, deixará o homem pai e mãe e se unirá à sua mulher, 
+                e serão dois uma só carne."
+              </Text>
+              <Text style={styles.verseRef}>Efésios 5:31</Text>
             </View>
-            <Text style={styles.title}>Nosso Diário</Text>
-            <Text style={styles.subtitle}>Aplicativo para Casais Cristãos</Text>
-            <Text style={styles.verse}>
-              "Portanto, deixará o homem pai e mãe e se unirá à sua mulher, 
-              e serão dois uma só carne."
-            </Text>
-            <Text style={styles.verseRef}>Efésios 5:31</Text>
-          </View>
 
-          {/* Features */}
-          <View style={styles.featuresContainer}>
-            <View style={styles.feature}>
-              <View style={styles.featureIconContainer}>
-                <Text style={styles.featureIcon}>💝</Text>
-              </View>
-              <Text style={styles.featureText}>Mural do Amor</Text>
+            {/* Features */}
+            <View style={styles.featuresContainer}>
+              <Card variant="feature" style={styles.feature}>
+                <View style={styles.featureIconContainer}>
+                  <Text style={styles.featureIcon}>💝</Text>
+                </View>
+                <Text style={styles.featureText}>Mural do Amor</Text>
+              </Card>
+              
+              <Card variant="feature" style={styles.feature}>
+                <View style={styles.featureIconContainer}>
+                  <Text style={styles.featureIcon}>📅</Text>
+                </View>
+                <Text style={styles.featureText}>Agenda do Casal</Text>
+              </Card>
+              
+              <Card variant="feature" style={styles.feature}>
+                <View style={styles.featureIconContainer}>
+                  <Text style={styles.featureIcon}>📖</Text>
+                </View>
+                <Text style={styles.featureText}>Espaço Espiritual</Text>
+              </Card>
+              
+              <Card variant="feature" style={styles.feature}>
+                <View style={styles.featureIconContainer}>
+                  <Text style={styles.featureIcon}>📝</Text>
+                </View>
+                <Text style={styles.featureText}>Diário Compartilhado</Text>
+              </Card>
             </View>
-            <View style={styles.feature}>
-              <View style={styles.featureIconContainer}>
-                <Text style={styles.featureIcon}>📅</Text>
-              </View>
-              <Text style={styles.featureText}>Agenda do Casal</Text>
-            </View>
-            <View style={styles.feature}>
-              <View style={styles.featureIconContainer}>
-                <Text style={styles.featureIcon}>📖</Text>
-              </View>
-              <Text style={styles.featureText}>Espaço Espiritual</Text>
-            </View>
-            <View style={styles.feature}>
-              <View style={styles.featureIconContainer}>
-                <Text style={styles.featureIcon}>📝</Text>
-              </View>
-              <Text style={styles.featureText}>Diário Compartilhado</Text>
+
+            {/* Action Buttons */}
+            <View style={styles.buttonsContainer}>
+              <TouchableOpacity 
+                style={[styles.button, styles.primaryButton]}
+                onPress={() => router.push('/auth/login')}
+              >
+                <Text style={styles.primaryButtonText}>Entrar</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity 
+                style={[styles.button, styles.secondaryButton]}
+                onPress={() => router.push('/auth/register')}
+              >
+                <Text style={styles.secondaryButtonText}>Cadastrar</Text>
+              </TouchableOpacity>
             </View>
           </View>
-
-          {/* Action Buttons */}
-          <View style={styles.buttonsContainer}>
-            <TouchableOpacity 
-              style={[styles.button, styles.primaryButton]}
-              onPress={() => router.push('/auth/login')}
-            >
-              <Text style={styles.primaryButtonText}>Entrar</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity 
-              style={[styles.button, styles.secondaryButton]}
-              onPress={() => router.push('/auth/register')}
-            >
-              <Text style={styles.secondaryButtonText}>Cadastrar</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </KeyboardAvoidingView>
+        </KeyboardAvoidingView>
+      </ResponsiveContainer>
     </SafeAreaView>
   );
 }
@@ -213,22 +222,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   feature: {
-    width: '48%',
-    backgroundColor: '#FFFFFF',
-    padding: 24,
-    borderRadius: 20,
     alignItems: 'center',
-    marginBottom: 16,
-    shadowColor: '#D4A5B0',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
-    borderWidth: 1,
-    borderColor: '#F4E6EA',
   },
   featureIconContainer: {
     width: 50,

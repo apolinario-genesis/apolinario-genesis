@@ -11,6 +11,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ResponsiveContainer from './components/ui/ResponsiveContainer';
+import Card from './components/ui/Card';
+import Header from './components/ui/Header';
+import NotificationBell from './components/NotificationBell';
+import NotificationService from './services/NotificationService';
 
 export default function DashboardScreen() {
   const router = useRouter();
@@ -19,6 +24,7 @@ export default function DashboardScreen() {
 
   useEffect(() => {
     loadUserData();
+    initializeNotifications();
   }, []);
 
   const loadUserData = async () => {
@@ -33,6 +39,18 @@ export default function DashboardScreen() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const initializeNotifications = async () => {
+    const notificationService = NotificationService.getInstance();
+    await notificationService.initialize();
+    
+    // Send a welcome notification
+    await notificationService.addNotification({
+      title: '🌅 Bem-vindos!',
+      message: 'Vocês estão conectados! Explorem juntos todas as funcionalidades do Nosso Diário.',
+      type: 'reminder',
+    });
   };
 
   const logout = async () => {
@@ -61,12 +79,22 @@ export default function DashboardScreen() {
     router.push(route);
   };
 
+  const showNotifications = () => {
+    Alert.alert(
+      '🔔 Notificações',
+      'Sistema de notificações ativo! Vocês receberão lembretes sobre eventos, mensagens e atividades.',
+      [{ text: 'OK' }]
+    );
+  };
+
   if (isLoading) {
     return (
       <SafeAreaView style={styles.container}>
-        <View style={styles.loadingContainer}>
-          <Text style={styles.loadingText}>Carregando...</Text>
-        </View>
+        <ResponsiveContainer>
+          <View style={styles.loadingContainer}>
+            <Text style={styles.loadingText}>Carregando...</Text>
+          </View>
+        </ResponsiveContainer>
       </SafeAreaView>
     );
   }
@@ -74,123 +102,128 @@ export default function DashboardScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="dark" />
-      <ScrollView style={styles.scrollView}>
-        {/* Header */}
-        <View style={styles.header}>
-          <View>
-            <Text style={styles.greeting}>Olá, {userData?.name}! 💕</Text>
-            {userData?.partner_name && (
-              <Text style={styles.partnerText}>
-                Conectado(a) com {userData.partner_name}
+      <ResponsiveContainer>
+        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+          {/* Header */}
+          <View style={styles.header}>
+            <View>
+              <Text style={styles.greeting}>Olá, {userData?.name}! 💕</Text>
+              {userData?.partner_name && (
+                <Text style={styles.partnerText}>
+                  Conectado(a) com {userData.partner_name}
+                </Text>
+              )}
+            </View>
+            <View style={styles.headerActions}>
+              <NotificationBell onPress={showNotifications} />
+              <TouchableOpacity style={styles.logoutButton} onPress={logout}>
+                <Text style={styles.logoutText}>Sair</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Welcome Message */}
+          <Card style={styles.welcomeCard}>
+            <View style={styles.welcomeHeader}>
+              <Text style={styles.heartIcon}>💕</Text>
+              <Text style={styles.welcomeTitle}>Bem-vindos ao Nosso Diário!</Text>
+            </View>
+            <Text style={styles.welcomeText}>
+              Vocês agora estão conectados como casal. Explorem juntos as funcionalidades 
+              que irão fortalecer ainda mais o relacionamento de vocês em Cristo.
+            </Text>
+          </Card>
+
+          {/* Features Grid */}
+          <View style={styles.featuresGrid}>
+            <Card 
+              variant="feature"
+              onPress={() => navigateToFeature('/(features)/love-wall')}
+            >
+              <View style={styles.featureIconContainer}>
+                <Text style={styles.featureIcon}>💝</Text>
+              </View>
+              <Text style={styles.featureTitle}>Mural do Amor</Text>
+              <Text style={styles.featureDescription}>
+                Enviem mensagens, frases e declarações românticas
               </Text>
-            )}
+            </Card>
+
+            <Card 
+              variant="feature"
+              onPress={() => navigateToFeature('/(features)/calendar')}
+            >
+              <View style={styles.featureIconContainer}>
+                <Text style={styles.featureIcon}>📅</Text>
+              </View>
+              <Text style={styles.featureTitle}>Agenda do Casal</Text>
+              <Text style={styles.featureDescription}>
+                Registrem datas importantes e compromissos
+              </Text>
+            </Card>
+
+            <Card 
+              variant="feature"
+              onPress={() => navigateToFeature('/(features)/diary')}
+            >
+              <View style={styles.featureIconContainer}>
+                <Text style={styles.featureIcon}>📝</Text>
+              </View>
+              <Text style={styles.featureTitle}>Diário Compartilhado</Text>
+              <Text style={styles.featureDescription}>
+                Registrem momentos marcantes juntos
+              </Text>
+            </Card>
+
+            <Card 
+              variant="feature"
+              onPress={() => navigateToFeature('/(features)/spiritual')}
+            >
+              <View style={styles.featureIconContainer}>
+                <Text style={styles.featureIcon}>📖</Text>
+              </View>
+              <Text style={styles.featureTitle}>Espaço Espiritual</Text>
+              <Text style={styles.featureDescription}>
+                Orações, reflexões e estudos bíblicos
+              </Text>
+            </Card>
+
+            <Card 
+              variant="feature"
+              onPress={() => Alert.alert('Em breve', 'Esta funcionalidade está sendo desenvolvida! 🎯')}
+            >
+              <View style={styles.featureIconContainer}>
+                <Text style={styles.featureIcon}>🎯</Text>
+              </View>
+              <Text style={styles.featureTitle}>Desafios</Text>
+              <Text style={styles.featureDescription}>
+                Desafios semanais para fortalecer o relacionamento
+              </Text>
+            </Card>
+
+            <Card 
+              variant="feature"
+              onPress={() => Alert.alert('Em breve', 'Esta funcionalidade está sendo desenvolvida! ❤️')}
+            >
+              <View style={styles.featureIconContainer}>
+                <Text style={styles.featureIcon}>❤️</Text>
+              </View>
+              <Text style={styles.featureTitle}>Emoções Diárias</Text>
+              <Text style={styles.featureDescription}>
+                Compartilhem como estão se sentindo
+              </Text>
+            </Card>
           </View>
-          <TouchableOpacity style={styles.logoutButton} onPress={logout}>
-            <Text style={styles.logoutText}>Sair</Text>
-          </TouchableOpacity>
-        </View>
 
-        {/* Welcome Message */}
-        <View style={styles.welcomeCard}>
-          <View style={styles.welcomeHeader}>
-            <Text style={styles.heartIcon}>💕</Text>
-            <Text style={styles.welcomeTitle}>Bem-vindos ao Nosso Diário!</Text>
-          </View>
-          <Text style={styles.welcomeText}>
-            Vocês agora estão conectados como casal. Explorem juntos as funcionalidades 
-            que irão fortalecer ainda mais o relacionamento de vocês em Cristo.
-          </Text>
-        </View>
-
-        {/* Features Grid */}
-        <View style={styles.featuresGrid}>
-          <TouchableOpacity 
-            style={styles.featureCard}
-            onPress={() => navigateToFeature('/(features)/love-wall')}
-          >
-            <View style={styles.featureIconContainer}>
-              <Text style={styles.featureIcon}>💝</Text>
-            </View>
-            <Text style={styles.featureTitle}>Mural do Amor</Text>
-            <Text style={styles.featureDescription}>
-              Enviem mensagens, frases e declarações românticas
+          {/* Bible Verse */}
+          <Card style={[styles.verseCard, { marginBottom: 50 }]}>
+            <Text style={styles.verseText}>
+              "Acima de tudo, revistam-se do amor, que é o elo perfeito."
             </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity 
-            style={styles.featureCard}
-            onPress={() => navigateToFeature('/(features)/calendar')}
-          >
-            <View style={styles.featureIconContainer}>
-              <Text style={styles.featureIcon}>📅</Text>
-            </View>
-            <Text style={styles.featureTitle}>Agenda do Casal</Text>
-            <Text style={styles.featureDescription}>
-              Registrem datas importantes e compromissos
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity 
-            style={styles.featureCard}
-            onPress={() => navigateToFeature('/(features)/diary')}
-          >
-            <View style={styles.featureIconContainer}>
-              <Text style={styles.featureIcon}>📝</Text>
-            </View>
-            <Text style={styles.featureTitle}>Diário Compartilhado</Text>
-            <Text style={styles.featureDescription}>
-              Registrem momentos marcantes juntos
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity 
-            style={styles.featureCard}
-            onPress={() => navigateToFeature('/(features)/spiritual')}
-          >
-            <View style={styles.featureIconContainer}>
-              <Text style={styles.featureIcon}>📖</Text>
-            </View>
-            <Text style={styles.featureTitle}>Espaço Espiritual</Text>
-            <Text style={styles.featureDescription}>
-              Planos de leitura bíblica e orações
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity 
-            style={styles.featureCard}
-            onPress={() => Alert.alert('Em breve', 'Esta funcionalidade está sendo desenvolvida! 🎯')}
-          >
-            <View style={styles.featureIconContainer}>
-              <Text style={styles.featureIcon}>🎯</Text>
-            </View>
-            <Text style={styles.featureTitle}>Desafios</Text>
-            <Text style={styles.featureDescription}>
-              Desafios semanais para fortalecer o relacionamento
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity 
-            style={styles.featureCard}
-            onPress={() => Alert.alert('Em breve', 'Esta funcionalidade está sendo desenvolvida! ❤️')}
-          >
-            <View style={styles.featureIconContainer}>
-              <Text style={styles.featureIcon}>❤️</Text>
-            </View>
-            <Text style={styles.featureTitle}>Emoções Diárias</Text>
-            <Text style={styles.featureDescription}>
-              Compartilhem como estão se sentindo
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Bible Verse */}
-        <View style={styles.verseCard}>
-          <Text style={styles.verseText}>
-            "Acima de tudo, revistam-se do amor, que é o elo perfeito."
-          </Text>
-          <Text style={styles.verseRef}>Colossenses 3:14</Text>
-        </View>
-      </ScrollView>
+            <Text style={styles.verseRef}>Colossenses 3:14</Text>
+          </Card>
+        </ScrollView>
+      </ResponsiveContainer>
     </SafeAreaView>
   );
 }
@@ -231,6 +264,11 @@ const styles = StyleSheet.create({
     marginTop: 4,
     fontWeight: '500',
   },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
   logoutButton: {
     paddingHorizontal: 12,
     paddingVertical: 8,
@@ -241,21 +279,8 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   welcomeCard: {
-    backgroundColor: '#FFFFFF',
     marginHorizontal: 32,
     marginBottom: 32,
-    padding: 24,
-    borderRadius: 20,
-    shadowColor: '#D4A5B0',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
-    borderWidth: 1,
-    borderColor: '#F4E6EA',
   },
   welcomeHeader: {
     flexDirection: 'row',
@@ -283,24 +308,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-  },
-  featureCard: {
-    width: '48%',
-    backgroundColor: '#FFFFFF',
-    padding: 20,
-    borderRadius: 20,
-    marginBottom: 16,
-    alignItems: 'center',
-    shadowColor: '#D4A5B0',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
-    borderWidth: 1,
-    borderColor: '#F4E6EA',
   },
   featureIconContainer: {
     width: 50,
@@ -331,11 +338,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#F9F1F3',
     marginHorizontal: 32,
     marginVertical: 32,
-    padding: 24,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: '#F4E6EA',
-    marginBottom: 50,
   },
   verseText: {
     fontSize: 16,

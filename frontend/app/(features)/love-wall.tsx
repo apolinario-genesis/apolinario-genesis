@@ -5,16 +5,18 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  Alert,
   TextInput,
   Modal,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { useRouter } from 'expo-router';
+import ResponsiveContainer from '../components/ui/ResponsiveContainer';
+import Card from '../components/ui/Card';
+import Header from '../components/ui/Header';
+import FloatingActionButton from '../components/ui/FloatingActionButton';
+import EmptyState from '../components/ui/EmptyState';
+import ApiService from '../services/ApiService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 
 interface LoveMessage {
   id: string;
@@ -27,13 +29,14 @@ interface LoveMessage {
 }
 
 export default function LoveWallScreen() {
-  const router = useRouter();
   const [messages, setMessages] = useState<LoveMessage[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [newMessage, setNewMessage] = useState('');
   const [messageType, setMessageType] = useState('message');
   const [currentUserId, setCurrentUserId] = useState('');
+
+  const apiService = ApiService.getInstance();
 
   useEffect(() => {
     loadUserData();
@@ -54,60 +57,29 @@ export default function LoveWallScreen() {
 
   const loadMessages = async () => {
     try {
-      const token = await AsyncStorage.getItem('auth_token');
-      const response = await fetch(`${BACKEND_URL}/api/love-messages`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setMessages(data);
-      } else {
-        Alert.alert('Erro', 'Erro ao carregar mensagens');
-      }
+      const data = await apiService.getLoveMessages();
+      setMessages(data);
     } catch (error) {
       console.error('Error loading messages:', error);
-      Alert.alert('Erro', 'Erro de conexão');
     } finally {
       setIsLoading(false);
     }
   };
 
   const sendMessage = async () => {
-    if (!newMessage.trim()) {
-      Alert.alert('Erro', 'Digite uma mensagem');
-      return;
-    }
+    if (!newMessage.trim()) return;
 
     try {
-      const token = await AsyncStorage.getItem('auth_token');
-      const response = await fetch(`${BACKEND_URL}/api/love-messages`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: newMessage,
-          message_type: messageType,
-        }),
+      await apiService.createLoveMessage({
+        message: newMessage,
+        message_type: messageType,
       });
 
-      if (response.ok) {
-        setNewMessage('');
-        setShowModal(false);
-        loadMessages(); // Reload messages
-        Alert.alert('Sucesso', 'Mensagem enviada com amor! 💕');
-      } else {
-        const error = await response.json();
-        Alert.alert('Erro', error.detail || 'Erro ao enviar mensagem');
-      }
+      setNewMessage('');
+      setShowModal(false);
+      loadMessages();
     } catch (error) {
       console.error('Error sending message:', error);
-      Alert.alert('Erro', 'Erro de conexão');
     }
   };
 
@@ -134,9 +106,11 @@ export default function LoveWallScreen() {
   if (isLoading) {
     return (
       <SafeAreaView style={styles.container}>
-        <View style={styles.loadingContainer}>
-          <Text style={styles.loadingText}>Carregando mensagens de amor...</Text>
-        </View>
+        <ResponsiveContainer>
+          <View style={styles.loadingContainer}>
+            <Text style={styles.loadingText}>Carregando mensagens de amor...</Text>
+          </View>
+        </ResponsiveContainer>
       </SafeAreaView>
     );
   }
@@ -144,137 +118,121 @@ export default function LoveWallScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="dark" />
-      
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity 
-          style={styles.backButton}
-          onPress={() => router.back()}
+      <ResponsiveContainer>
+        <Header 
+          title="💝 Mural do Amor" 
+          subtitle="Mensagens românticas entre vocês"
+          showBackButton={true}
+        />
+
+        <ScrollView style={styles.messagesList} showsVerticalScrollIndicator={false}>
+          {messages.length === 0 ? (
+            <EmptyState
+              icon="💕"
+              title="Ainda não há mensagens"
+              description="Que tal começar enviando uma mensagem de amor para seu parceiro(a)?"
+            />
+          ) : (
+            messages.map((message) => {
+              const isSent = message.sender_id === currentUserId;
+              return (
+                <Card
+                  key={message.id}
+                  style={[
+                    styles.messageCard,
+                    isSent ? styles.sentMessage : styles.receivedMessage,
+                  ]}
+                >
+                  <View style={styles.messageHeader}>
+                    <Text style={styles.messageIcon}>
+                      {getMessageIcon(message.message_type, isSent)}
+                    </Text>
+                    <Text style={styles.senderName}>
+                      {isSent ? 'Você' : message.sender_name}
+                    </Text>
+                    <Text style={styles.messageDate}>
+                      {formatDate(message.created_at)}
+                    </Text>
+                  </View>
+                  <Text style={styles.messageText}>{message.message}</Text>
+                </Card>
+              );
+            })
+          )}
+        </ScrollView>
+
+        <FloatingActionButton onPress={() => setShowModal(true)} />
+
+        {/* Create Message Modal */}
+        <Modal
+          visible={showModal}
+          animationType="slide"
+          presentationStyle="pageSheet"
+          onRequestClose={() => setShowModal(false)}
         >
-          <Text style={styles.backButtonText}>← Voltar</Text>
-        </TouchableOpacity>
-        <View style={styles.headerContent}>
-          <Text style={styles.title}>💝 Mural do Amor</Text>
-          <Text style={styles.subtitle}>Mensagens românticas entre vocês</Text>
-        </View>
-      </View>
-
-      {/* Messages List */}
-      <ScrollView style={styles.messagesList} showsVerticalScrollIndicator={false}>
-        {messages.length === 0 ? (
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyIcon}>💕</Text>
-            <Text style={styles.emptyTitle}>Ainda não há mensagens</Text>
-            <Text style={styles.emptyText}>
-              Que tal começar enviando uma mensagem de amor para seu parceiro(a)?
-            </Text>
-          </View>
-        ) : (
-          messages.map((message) => {
-            const isSent = message.sender_id === currentUserId;
-            return (
-              <View
-                key={message.id}
-                style={[
-                  styles.messageCard,
-                  isSent ? styles.sentMessage : styles.receivedMessage,
-                ]}
-              >
-                <View style={styles.messageHeader}>
-                  <Text style={styles.messageIcon}>
-                    {getMessageIcon(message.message_type, isSent)}
-                  </Text>
-                  <Text style={styles.senderName}>
-                    {isSent ? 'Você' : message.sender_name}
-                  </Text>
-                  <Text style={styles.messageDate}>
-                    {formatDate(message.created_at)}
-                  </Text>
-                </View>
-                <Text style={styles.messageText}>{message.message}</Text>
-              </View>
-            );
-          })
-        )}
-      </ScrollView>
-
-      {/* Floating Action Button */}
-      <TouchableOpacity
-        style={styles.fab}
-        onPress={() => setShowModal(true)}
-      >
-        <Text style={styles.fabText}>+</Text>
-      </TouchableOpacity>
-
-      {/* Create Message Modal */}
-      <Modal
-        visible={showModal}
-        animationType="slide"
-        presentationStyle="pageSheet"
-        onRequestClose={() => setShowModal(false)}
-      >
-        <SafeAreaView style={styles.modalContainer}>
-          <View style={styles.modalHeader}>
-            <TouchableOpacity onPress={() => setShowModal(false)}>
-              <Text style={styles.modalCancelText}>Cancelar</Text>
-            </TouchableOpacity>
-            <Text style={styles.modalTitle}>Nova Mensagem</Text>
-            <TouchableOpacity onPress={sendMessage}>
-              <Text style={styles.modalSendText}>Enviar</Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.modalContent}>
-            {/* Message Type Selector */}
-            <View style={styles.typeSelector}>
-              <TouchableOpacity
-                style={[
-                  styles.typeButton,
-                  messageType === 'message' && styles.typeButtonActive,
-                ]}
-                onPress={() => setMessageType('message')}
-              >
-                <Text style={styles.typeIcon}>💕</Text>
-                <Text style={styles.typeText}>Mensagem</Text>
+          <SafeAreaView style={styles.modalContainer}>
+            <View style={styles.modalHeader}>
+              <TouchableOpacity onPress={() => setShowModal(false)}>
+                <Text style={styles.modalCancelText}>Cancelar</Text>
               </TouchableOpacity>
-              
-              <TouchableOpacity
-                style={[
-                  styles.typeButton,
-                  messageType === 'quote' && styles.typeButtonActive,
-                ]}
-                onPress={() => setMessageType('quote')}
-              >
-                <Text style={styles.typeIcon}>💌</Text>
-                <Text style={styles.typeText}>Frase</Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity
-                style={[
-                  styles.typeButton,
-                  messageType === 'declaration' && styles.typeButtonActive,
-                ]}
-                onPress={() => setMessageType('declaration')}
-              >
-                <Text style={styles.typeIcon}>❤️</Text>
-                <Text style={styles.typeText}>Declaração</Text>
+              <Text style={styles.modalTitle}>Nova Mensagem</Text>
+              <TouchableOpacity onPress={sendMessage}>
+                <Text style={styles.modalSendText}>Enviar</Text>
               </TouchableOpacity>
             </View>
 
-            {/* Message Input */}
-            <TextInput
-              style={styles.messageInput}
-              placeholder="Digite sua mensagem de amor..."
-              placeholderTextColor="#A66B7A"
-              value={newMessage}
-              onChangeText={setNewMessage}
-              multiline
-              numberOfLines={6}
-              textAlignVertical="top"
-            />
-          </View>
-        </SafeAreaView>
-      </Modal>
+            <View style={styles.modalContent}>
+              {/* Message Type Selector */}
+              <View style={styles.typeSelector}>
+                <TouchableOpacity
+                  style={[
+                    styles.typeButton,
+                    messageType === 'message' && styles.typeButtonActive,
+                  ]}
+                  onPress={() => setMessageType('message')}
+                >
+                  <Text style={styles.typeIcon}>💕</Text>
+                  <Text style={styles.typeText}>Mensagem</Text>
+                </TouchableOpacity>
+                
+                <TouchableOpacity
+                  style={[
+                    styles.typeButton,
+                    messageType === 'quote' && styles.typeButtonActive,
+                  ]}
+                  onPress={() => setMessageType('quote')}
+                >
+                  <Text style={styles.typeIcon}>💌</Text>
+                  <Text style={styles.typeText}>Frase</Text>
+                </TouchableOpacity>
+                
+                <TouchableOpacity
+                  style={[
+                    styles.typeButton,
+                    messageType === 'declaration' && styles.typeButtonActive,
+                  ]}
+                  onPress={() => setMessageType('declaration')}
+                >
+                  <Text style={styles.typeIcon}>❤️</Text>
+                  <Text style={styles.typeText}>Declaração</Text>
+                </TouchableOpacity>
+              </View>
+
+              {/* Message Input */}
+              <TextInput
+                style={styles.messageInput}
+                placeholder="Digite sua mensagem de amor..."
+                placeholderTextColor="#A66B7A"
+                value={newMessage}
+                onChangeText={setNewMessage}
+                multiline
+                numberOfLines={6}
+                textAlignVertical="top"
+              />
+            </View>
+          </SafeAreaView>
+        </Modal>
+      </ResponsiveContainer>
     </SafeAreaView>
   );
 }
@@ -294,80 +252,21 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
   },
-  header: {
-    paddingHorizontal: 32,
-    paddingVertical: 20,
-  },
-  backButton: {
-    paddingVertical: 8,
-    marginBottom: 16,
-  },
-  backButtonText: {
-    color: '#D4A5B0',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  headerContent: {
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#8B4B6B',
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: '#A66B7A',
-    textAlign: 'center',
-  },
   messagesList: {
     flex: 1,
     paddingHorizontal: 32,
   },
-  emptyState: {
-    alignItems: 'center',
-    paddingTop: 80,
-    paddingHorizontal: 32,
-  },
-  emptyIcon: {
-    fontSize: 64,
-    marginBottom: 16,
-  },
-  emptyTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#8B4B6B',
-    marginBottom: 12,
-  },
-  emptyText: {
-    fontSize: 14,
-    color: '#A66B7A',
-    textAlign: 'center',
-    lineHeight: 22,
-  },
   messageCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    padding: 20,
-    marginBottom: 16,
-    shadowColor: '#D4A5B0',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
-    borderWidth: 1,
+    marginLeft: 0,
+    marginRight: 0,
   },
   sentMessage: {
-    borderColor: '#F4E6EA',
     marginLeft: 40,
+    borderColor: '#F4E6EA',
   },
   receivedMessage: {
-    borderColor: '#E8F5E8',
     marginRight: 40,
+    borderColor: '#E8F5E8',
     backgroundColor: '#F9F7F9',
   },
   messageHeader: {
@@ -393,30 +292,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: '#8B4B6B',
     lineHeight: 22,
-  },
-  fab: {
-    position: 'absolute',
-    bottom: 30,
-    right: 30,
-    width: 60,
-    height: 60,
-    backgroundColor: '#D4A5B0',
-    borderRadius: 30,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#D4A5B0',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
-  },
-  fabText: {
-    fontSize: 28,
-    color: '#FFFFFF',
-    fontWeight: '300',
   },
   modalContainer: {
     flex: 1,
