@@ -69,7 +69,7 @@ export default function DashboardScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
       <ScrollView style={styles.scrollView}>
         {/* Header */}
         <View style={styles.header}>
@@ -88,7 +88,10 @@ export default function DashboardScreen() {
 
         {/* Welcome Message */}
         <View style={styles.welcomeCard}>
-          <Text style={styles.welcomeTitle}>Bem-vindos ao Sacred Bond! 🙏</Text>
+          <View style={styles.welcomeHeader}>
+            <Text style={styles.heartIcon}>💕</Text>
+            <Text style={styles.welcomeTitle}>Bem-vindos ao Nosso Diário!</Text>
+          </View>
           <Text style={styles.welcomeText}>
             Vocês agora estão conectados como casal. Explorem juntos as funcionalidades 
             que irão fortalecer ainda mais o relacionamento de vocês em Cristo.
@@ -101,7 +104,9 @@ export default function DashboardScreen() {
             style={styles.featureCard}
             onPress={() => Alert.alert('Em breve', 'Esta funcionalidade está sendo desenvolvida! 💕')}
           >
-            <Text style={styles.featureIcon}>💕</Text>
+            <View style={styles.featureIconContainer}>
+              <Text style={styles.featureIcon}>💝</Text>
+            </View>
             <Text style={styles.featureTitle}>Mural do Amor</Text>
             <Text style={styles.featureDescription}>
               Enviem mensagens, frases e declarações românticas
@@ -112,7 +117,9 @@ export default function DashboardScreen() {
             style={styles.featureCard}
             onPress={() => Alert.alert('Em breve', 'Esta funcionalidade está sendo desenvolvida! 📅')}
           >
-            <Text style={styles.featureIcon}>📅</Text>
+            <View style={styles.featureIconContainer}>
+              <Text style={styles.featureIcon}>📅</Text>
+            </View>
             <Text style={styles.featureTitle}>Agenda do Casal</Text>
             <Text style={styles.featureDescription}>
               Registrem datas importantes e compromissos
@@ -121,9 +128,11 @@ export default function DashboardScreen() {
 
           <TouchableOpacity 
             style={styles.featureCard}
-            onPress={() => Alert.alert('Em breve', 'Esta funcionalidade está sendo desenvolvida! 📓')}
+            onPress={() => Alert.alert('Em breve', 'Esta funcionalidade está sendo desenvolvida! 📝')}
           >
-            <Text style={styles.featureIcon}>📓</Text>
+            <View style={styles.featureIconContainer}>
+              <Text style={styles.featureIcon}>📝</Text>
+            </View>
             <Text style={styles.featureTitle}>Diário Compartilhado</Text>
             <Text style={styles.featureDescription}>
               Registrem momentos marcantes juntos
@@ -134,7 +143,9 @@ export default function DashboardScreen() {
             style={styles.featureCard}
             onPress={() => Alert.alert('Em breve', 'Esta funcionalidade está sendo desenvolvida! 📖')}
           >
-            <Text style={styles.featureIcon}>📖</Text>
+            <View style={styles.featureIconContainer}>
+              <Text style={styles.featureIcon}>📖</Text>
+            </View>
             <Text style={styles.featureTitle}>Espaço Espiritual</Text>
             <Text style={styles.featureDescription}>
               Planos de leitura bíblica e orações
@@ -145,7 +156,9 @@ export default function DashboardScreen() {
             style={styles.featureCard}
             onPress={() => Alert.alert('Em breve', 'Esta funcionalidade está sendo desenvolvida! 🎯')}
           >
-            <Text style={styles.featureIcon}>🎯</Text>
+            <View style={styles.featureIconContainer}>
+              <Text style={styles.featureIcon}>🎯</Text>
+            </View>
             <Text style={styles.featureTitle}>Desafios</Text>
             <Text style={styles.featureDescription}>
               Desafios semanais para fortalecer o relacionamento
@@ -156,7 +169,9 @@ export default function DashboardScreen() {
             style={styles.featureCard}
             onPress={() => Alert.alert('Em breve', 'Esta funcionalidade está sendo desenvolvida! ❤️')}
           >
-            <Text style={styles.featureIcon}>❤️</Text>
+            <View style={styles.featureIconContainer}>
+              <Text style={styles.featureIcon}>❤️</Text>
+            </View>
             <Text style={styles.featureTitle}>Emoções Diárias</Text>
             <Text style={styles.featureDescription}>
               Compartilhem como estão se sentindo
@@ -179,7 +194,7 @@ export default function DashboardScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1a1a2e',
+    backgroundColor: '#FDFBFB',
   },
   loadingContainer: {
     flex: 1,
@@ -187,7 +202,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   loadingText: {
-    color: '#fff',
+    color: '#8B4B6B',
     fontSize: 18,
     fontWeight: '500',
   },
@@ -198,104 +213,138 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 24,
+    paddingHorizontal: 32,
     paddingVertical: 20,
   },
   greeting: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#ff6b9d',
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#8B4B6B',
   },
   partnerText: {
     fontSize: 14,
-    color: '#a5b4fc',
+    color: '#A66B7A',
     marginTop: 4,
+    fontWeight: '500',
   },
   logoutButton: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 12,
     paddingVertical: 8,
   },
   logoutText: {
-    color: '#6b7280',
+    color: '#A66B7A',
     fontSize: 16,
+    fontWeight: '500',
   },
   welcomeCard: {
-    backgroundColor: '#16213e',
-    marginHorizontal: 24,
-    marginBottom: 24,
-    padding: 20,
-    borderRadius: 16,
+    backgroundColor: '#FFFFFF',
+    marginHorizontal: 32,
+    marginBottom: 32,
+    padding: 24,
+    borderRadius: 20,
+    shadowColor: '#D4A5B0',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
     borderWidth: 1,
-    borderColor: '#1e3a8a',
+    borderColor: '#F4E6EA',
+  },
+  welcomeHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+  },
+  heartIcon: {
+    fontSize: 24,
+    marginRight: 8,
   },
   welcomeTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#ff6b9d',
-    marginBottom: 12,
-    textAlign: 'center',
+    fontWeight: '700',
+    color: '#8B4B6B',
   },
   welcomeText: {
     fontSize: 14,
-    color: '#c7d2fe',
+    color: '#8B4B6B',
     lineHeight: 22,
     textAlign: 'center',
   },
   featuresGrid: {
-    paddingHorizontal: 24,
+    paddingHorizontal: 32,
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
   },
   featureCard: {
     width: '48%',
-    backgroundColor: '#16213e',
+    backgroundColor: '#FFFFFF',
     padding: 20,
-    borderRadius: 16,
+    borderRadius: 20,
     marginBottom: 16,
     alignItems: 'center',
+    shadowColor: '#D4A5B0',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
     borderWidth: 1,
-    borderColor: '#1e3a8a',
+    borderColor: '#F4E6EA',
   },
-  featureIcon: {
-    fontSize: 32,
+  featureIconContainer: {
+    width: 50,
+    height: 50,
+    backgroundColor: '#F9F1F3',
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: 12,
   },
+  featureIcon: {
+    fontSize: 24,
+  },
   featureTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#e0e7ff',
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#8B4B6B',
     marginBottom: 8,
     textAlign: 'center',
   },
   featureDescription: {
     fontSize: 12,
-    color: '#a5b4fc',
+    color: '#A66B7A',
     textAlign: 'center',
     lineHeight: 18,
   },
   verseCard: {
-    backgroundColor: '#16213e',
-    marginHorizontal: 24,
-    marginVertical: 24,
-    padding: 20,
-    borderRadius: 16,
+    backgroundColor: '#F9F1F3',
+    marginHorizontal: 32,
+    marginVertical: 32,
+    padding: 24,
+    borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#ff6b9d',
-    marginBottom: 40,
+    borderColor: '#F4E6EA',
+    marginBottom: 50,
   },
   verseText: {
     fontSize: 16,
-    color: '#e0e7ff',
+    color: '#8B4B6B',
     textAlign: 'center',
     lineHeight: 24,
     fontStyle: 'italic',
-    marginBottom: 8,
+    marginBottom: 12,
   },
   verseRef: {
     fontSize: 14,
-    color: '#ff6b9d',
+    color: '#D4A5B0',
     textAlign: 'center',
-    fontWeight: '600',
+    fontWeight: '700',
   },
 });

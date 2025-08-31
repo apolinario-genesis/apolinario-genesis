@@ -61,7 +61,7 @@ export default function WelcomeScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
       <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.container}
@@ -69,7 +69,10 @@ export default function WelcomeScreen() {
         <View style={styles.content}>
           {/* Header */}
           <View style={styles.header}>
-            <Text style={styles.title}>Sacred Bond</Text>
+            <View style={styles.logoContainer}>
+              <Text style={styles.heartIcon}>💕</Text>
+            </View>
+            <Text style={styles.title}>Nosso Diário</Text>
             <Text style={styles.subtitle}>Aplicativo para Casais Cristãos</Text>
             <Text style={styles.verse}>
               "Portanto, deixará o homem pai e mãe e se unirá à sua mulher, 
@@ -81,19 +84,27 @@ export default function WelcomeScreen() {
           {/* Features */}
           <View style={styles.featuresContainer}>
             <View style={styles.feature}>
-              <Text style={styles.featureIcon}>💕</Text>
+              <View style={styles.featureIconContainer}>
+                <Text style={styles.featureIcon}>💝</Text>
+              </View>
               <Text style={styles.featureText}>Mural do Amor</Text>
             </View>
             <View style={styles.feature}>
-              <Text style={styles.featureIcon}>📅</Text>
+              <View style={styles.featureIconContainer}>
+                <Text style={styles.featureIcon}>📅</Text>
+              </View>
               <Text style={styles.featureText}>Agenda do Casal</Text>
             </View>
             <View style={styles.feature}>
-              <Text style={styles.featureIcon}>📖</Text>
+              <View style={styles.featureIconContainer}>
+                <Text style={styles.featureIcon}>📖</Text>
+              </View>
               <Text style={styles.featureText}>Espaço Espiritual</Text>
             </View>
             <View style={styles.feature}>
-              <Text style={styles.featureIcon}>📓</Text>
+              <View style={styles.featureIconContainer}>
+                <Text style={styles.featureIcon}>📝</Text>
+              </View>
               <Text style={styles.featureText}>Diário Compartilhado</Text>
             </View>
           </View>
@@ -104,14 +115,14 @@ export default function WelcomeScreen() {
               style={[styles.button, styles.primaryButton]}
               onPress={() => router.push('/auth/login')}
             >
-              <Text style={styles.primaryButtonText}>Fazer Login</Text>
+              <Text style={styles.primaryButtonText}>Entrar</Text>
             </TouchableOpacity>
 
             <TouchableOpacity 
               style={[styles.button, styles.secondaryButton]}
               onPress={() => router.push('/auth/register')}
             >
-              <Text style={styles.secondaryButtonText}>Criar Conta</Text>
+              <Text style={styles.secondaryButtonText}>Cadastrar</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -123,7 +134,7 @@ export default function WelcomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1a1a2e',
+    backgroundColor: '#FDFBFB',
   },
   loadingContainer: {
     flex: 1,
@@ -131,100 +142,148 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   loadingText: {
-    color: '#fff',
+    color: '#8B4B6B',
     fontSize: 18,
     fontWeight: '500',
   },
   content: {
     flex: 1,
-    paddingHorizontal: 24,
+    paddingHorizontal: 32,
     justifyContent: 'space-between',
   },
   header: {
     alignItems: 'center',
     marginTop: 60,
   },
+  logoContainer: {
+    width: 80,
+    height: 80,
+    backgroundColor: '#F4E6EA',
+    borderRadius: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 24,
+    shadowColor: '#D4A5B0',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  heartIcon: {
+    fontSize: 36,
+  },
   title: {
-    fontSize: 40,
-    fontWeight: 'bold',
-    color: '#ff6b9d',
+    fontSize: 32,
+    fontWeight: '700',
+    color: '#8B4B6B',
     marginBottom: 8,
     textAlign: 'center',
   },
   subtitle: {
-    fontSize: 18,
-    color: '#c7d2fe',
+    fontSize: 16,
+    color: '#A66B7A',
     marginBottom: 32,
     textAlign: 'center',
+    fontWeight: '500',
   },
   verse: {
-    fontSize: 16,
-    color: '#e0e7ff',
+    fontSize: 15,
+    color: '#8B4B6B',
     textAlign: 'center',
     lineHeight: 24,
     marginBottom: 8,
     fontStyle: 'italic',
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
   },
   verseRef: {
-    fontSize: 14,
-    color: '#a5b4fc',
+    fontSize: 13,
+    color: '#A66B7A',
     textAlign: 'center',
     marginBottom: 40,
+    fontWeight: '600',
   },
   featuresContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
     marginBottom: 40,
+    paddingHorizontal: 8,
   },
   feature: {
     width: '48%',
-    backgroundColor: '#16213e',
-    padding: 20,
-    borderRadius: 16,
+    backgroundColor: '#FFFFFF',
+    padding: 24,
+    borderRadius: 20,
     alignItems: 'center',
     marginBottom: 16,
+    shadowColor: '#D4A5B0',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
     borderWidth: 1,
-    borderColor: '#1e3a8a',
+    borderColor: '#F4E6EA',
+  },
+  featureIconContainer: {
+    width: 50,
+    height: 50,
+    backgroundColor: '#F9F1F3',
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
   },
   featureIcon: {
-    fontSize: 32,
-    marginBottom: 8,
+    fontSize: 24,
   },
   featureText: {
-    color: '#c7d2fe',
+    color: '#8B4B6B',
     fontSize: 14,
     fontWeight: '600',
     textAlign: 'center',
+    lineHeight: 20,
   },
   buttonsContainer: {
-    paddingBottom: 40,
+    paddingBottom: 50,
     gap: 16,
   },
   button: {
-    paddingVertical: 16,
+    paddingVertical: 18,
     paddingHorizontal: 32,
-    borderRadius: 12,
+    borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: 56,
+    shadowColor: '#D4A5B0',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 4,
   },
   primaryButton: {
-    backgroundColor: '#ff6b9d',
+    backgroundColor: '#D4A5B0',
   },
   primaryButtonText: {
-    color: '#fff',
+    color: '#FFFFFF',
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: '700',
   },
   secondaryButton: {
-    backgroundColor: 'transparent',
+    backgroundColor: '#FFFFFF',
     borderWidth: 2,
-    borderColor: '#ff6b9d',
+    borderColor: '#D4A5B0',
   },
   secondaryButtonText: {
-    color: '#ff6b9d',
+    color: '#D4A5B0',
     fontSize: 18,
     fontWeight: '600',
   },

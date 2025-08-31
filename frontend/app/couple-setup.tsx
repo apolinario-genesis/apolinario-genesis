@@ -90,8 +90,8 @@ export default function CoupleSetupScreen() {
   const shareCode = async () => {
     try {
       await Share.share({
-        message: `Olá! Vamos nos conectar no Sacred Bond! 💕\n\nMeu código do casal é: ${userCoupleCode}\n\nBaixe o app e use este código para nos conectarmos como casal!`,
-        title: 'Código do Casal - Sacred Bond',
+        message: `Olá! Vamos nos conectar no Nosso Diário! 💕\n\nMeu código do casal é: ${userCoupleCode}\n\nBaixe o app e use este código para nos conectarmos como casal!`,
+        title: 'Código do Casal - Nosso Diário',
       });
     } catch (error) {
       console.error('Error sharing code:', error);
@@ -109,7 +109,7 @@ export default function CoupleSetupScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
       <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.container}
@@ -120,6 +120,11 @@ export default function CoupleSetupScreen() {
             <TouchableOpacity style={styles.logoutButton} onPress={logout}>
               <Text style={styles.logoutText}>Sair</Text>
             </TouchableOpacity>
+            
+            <View style={styles.logoContainer}>
+              <Text style={styles.heartIcon}>💕</Text>
+            </View>
+            
             <Text style={styles.title}>Conectar com seu Parceiro(a)</Text>
             <Text style={styles.subtitle}>Olá, {userName}! 💕</Text>
           </View>
@@ -159,7 +164,7 @@ export default function CoupleSetupScreen() {
               <TextInput
                 style={styles.input}
                 placeholder="Digite o código (ex: ABC123)"
-                placeholderTextColor="#6b7280"
+                placeholderTextColor="#A66B7A"
                 value={coupleCode}
                 onChangeText={setCoupleCode}
                 maxLength={6}
@@ -182,7 +187,7 @@ export default function CoupleSetupScreen() {
           {/* Info */}
           <View style={styles.infoContainer}>
             <Text style={styles.infoText}>
-              💡 Após a conexão, vocês poderão usar todas as funcionalidades do Sacred Bond juntos!
+              💡 Após a conexão, vocês poderão usar todas as funcionalidades do Nosso Diário juntos!
             </Text>
           </View>
         </ScrollView>
@@ -194,11 +199,11 @@ export default function CoupleSetupScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1a1a2e',
+    backgroundColor: '#FDFBFB',
   },
   scrollContent: {
     flexGrow: 1,
-    paddingHorizontal: 24,
+    paddingHorizontal: 32,
   },
   header: {
     marginTop: 20,
@@ -208,67 +213,107 @@ const styles = StyleSheet.create({
   logoutButton: {
     alignSelf: 'flex-end',
     marginBottom: 20,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
   },
   logoutText: {
-    color: '#6b7280',
+    color: '#A66B7A',
     fontSize: 16,
+    fontWeight: '500',
+  },
+  logoContainer: {
+    width: 60,
+    height: 60,
+    backgroundColor: '#F4E6EA',
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+    shadowColor: '#D4A5B0',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  heartIcon: {
+    fontSize: 28,
   },
   title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#ff6b9d',
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#8B4B6B',
     marginBottom: 8,
     textAlign: 'center',
   },
   subtitle: {
-    fontSize: 18,
-    color: '#c7d2fe',
+    fontSize: 16,
+    color: '#A66B7A',
     textAlign: 'center',
+    fontWeight: '500',
   },
   section: {
     marginBottom: 32,
   },
   sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#e0e7ff',
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#8B4B6B',
     marginBottom: 8,
     textAlign: 'center',
   },
   sectionSubtitle: {
     fontSize: 14,
-    color: '#a5b4fc',
+    color: '#A66B7A',
     textAlign: 'center',
     marginBottom: 24,
     lineHeight: 20,
   },
   codeContainer: {
-    backgroundColor: '#16213e',
+    backgroundColor: '#FFFFFF',
     borderWidth: 2,
-    borderColor: '#ff6b9d',
-    borderRadius: 16,
+    borderColor: '#D4A5B0',
+    borderRadius: 20,
     paddingVertical: 24,
     paddingHorizontal: 32,
     alignItems: 'center',
     marginBottom: 16,
+    shadowColor: '#D4A5B0',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
   },
   code: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#ff6b9d',
-    letterSpacing: 4,
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#D4A5B0',
+    letterSpacing: 3,
   },
   shareButton: {
-    backgroundColor: '#4f46e5',
+    backgroundColor: '#B8E6D1',
     paddingVertical: 16,
-    borderRadius: 12,
+    borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: '#B8E6D1',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 3,
   },
   shareButtonText: {
-    color: '#fff',
+    color: '#4A6A5A',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '700',
   },
   divider: {
     flexDirection: 'row',
@@ -278,61 +323,80 @@ const styles = StyleSheet.create({
   dividerLine: {
     flex: 1,
     height: 1,
-    backgroundColor: '#374151',
+    backgroundColor: '#F4E6EA',
   },
   dividerText: {
-    color: '#6b7280',
+    color: '#A66B7A',
     fontSize: 14,
     marginHorizontal: 16,
+    fontWeight: '500',
   },
   inputContainer: {
     marginBottom: 24,
   },
   label: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '600',
-    color: '#e0e7ff',
+    color: '#8B4B6B',
     marginBottom: 8,
   },
   input: {
-    backgroundColor: '#16213e',
-    borderWidth: 1,
-    borderColor: '#1e3a8a',
-    borderRadius: 12,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1.5,
+    borderColor: '#F4E6EA',
+    borderRadius: 16,
     paddingHorizontal: 16,
-    paddingVertical: 16,
-    fontSize: 18,
-    color: '#fff',
+    paddingVertical: 18,
+    fontSize: 16,
+    color: '#8B4B6B',
     textAlign: 'center',
-    fontWeight: 'bold',
+    fontWeight: '600',
     letterSpacing: 2,
     minHeight: 56,
+    shadowColor: '#D4A5B0',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 1,
   },
   joinButton: {
-    backgroundColor: '#ff6b9d',
-    paddingVertical: 16,
-    borderRadius: 12,
+    backgroundColor: '#D4A5B0',
+    paddingVertical: 18,
+    borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: 56,
+    shadowColor: '#D4A5B0',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 4,
   },
   joinButtonDisabled: {
-    backgroundColor: '#9ca3af',
+    backgroundColor: '#C4A5A5',
   },
   joinButtonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '700',
   },
   infoContainer: {
-    backgroundColor: '#16213e',
-    padding: 16,
-    borderRadius: 12,
+    backgroundColor: '#F9F1F3',
+    padding: 20,
+    borderRadius: 16,
     marginTop: 16,
     marginBottom: 40,
+    borderWidth: 1,
+    borderColor: '#F4E6EA',
   },
   infoText: {
-    color: '#a5b4fc',
+    color: '#8B4B6B',
     fontSize: 14,
     textAlign: 'center',
     lineHeight: 20,
