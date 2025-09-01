@@ -124,10 +124,10 @@ class BackendTester:
         """Test user login endpoint"""
         print("\n=== Testing User Login ===")
         
-        # Test João login
+        # Test Maria login
         login_data = {
-            "email": "joao.silva@gmail.com",
-            "password": "MinhaSenh@123"
+            "email": "maria.silva@teste.com",
+            "password": "senha123"
         }
         
         try:
