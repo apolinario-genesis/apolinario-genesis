@@ -40,8 +40,12 @@ export default function LoginScreen() {
   });
 
   const onSubmit = async (data: FormData) => {
+    console.log('🔐 Iniciando login:', { email: data.email });
     setIsLoading(true);
+    
     try {
+      console.log('📡 Enviando requisição para:', `${BACKEND_URL}/api/auth/login`);
+      
       const response = await fetch(`${BACKEND_URL}/api/auth/login`, {
         method: 'POST',
         headers: {
@@ -50,27 +54,54 @@ export default function LoginScreen() {
         body: JSON.stringify(data),
       });
 
+      console.log('📥 Resposta do login:', response.status, response.statusText);
       const result = await response.json();
+      console.log('📋 Dados do login:', result);
 
       if (response.ok) {
+        console.log('✅ Login realizado com sucesso');
+        
         // Store auth data
         await AsyncStorage.setItem('auth_token', result.access_token);
         await AsyncStorage.setItem('user_data', JSON.stringify(result.user));
-
-        Alert.alert('Sucesso', 'Login realizado com sucesso!');
         
-        // Navigate based on whether user has a partner
-        if (result.user.partner_id) {
-          router.replace('/dashboard');
-        } else {
-          router.replace('/couple-setup');
-        }
+        console.log('💾 Dados de login salvos');
+
+        const welcomeMessage = result.user.partner_id 
+          ? `Bem-vindo de volta, ${result.user.name}! 💕\nVocê está conectado(a) com ${result.user.partner_name}.`
+          : `Bem-vindo, ${result.user.name}! 💕\nAgora você pode convidar seu parceiro(a) usando seu código: ${result.user.couple_code}`;
+
+        Alert.alert(
+          'Login Realizado! 🎉',
+          welcomeMessage,
+          [
+            {
+              text: 'Continuar',
+              onPress: () => {
+                if (result.user.partner_id) {
+                  console.log('🏠 Navegando para dashboard (casal conectado)');
+                  router.replace('/dashboard');
+                } else {
+                  console.log('👫 Navegando para couple-setup (sem parceiro)');
+                  router.replace('/couple-setup');
+                }
+              }
+            }
+          ]
+        );
       } else {
-        Alert.alert('Erro', result.detail || 'Erro ao fazer login');
+        console.log('❌ Erro no login:', result);
+        Alert.alert('Erro de Login', result.detail || 'Email ou senha incorretos.');
       }
     } catch (error) {
-      console.error('Login error:', error);
-      Alert.alert('Erro', 'Erro de conexão. Tente novamente.');
+      console.error('💥 Erro de conexão no login:', error);
+      Alert.alert(
+        'Erro de Conexão', 
+        'Não foi possível conectar ao servidor. Verifique sua internet e tente novamente.',
+        [
+          { text: 'Tentar Novamente', onPress: () => setIsLoading(false) }
+        ]
+      );
     } finally {
       setIsLoading(false);
     }
