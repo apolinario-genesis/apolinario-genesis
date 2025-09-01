@@ -42,6 +42,12 @@ export default function RegisterScreen() {
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
+    defaultValues: {
+      name: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+    },
   });
 
   const onSubmit = async (data: FormData) => {
