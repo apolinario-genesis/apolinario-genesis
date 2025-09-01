@@ -733,6 +733,18 @@ class BackendTester:
         # Print summary
         self.print_summary()
     
+    def run_quick_registration_test(self):
+        """Run only the specific registration test as requested"""
+        print("🚀 TESTE RÁPIDO - Confirmação do Endpoint de Registro")
+        print(f"Testing against: {BACKEND_URL}")
+        print("=" * 60)
+        
+        # Run only the specific test
+        self.test_specific_registration_fix()
+        
+        # Print summary
+        self.print_summary()
+    
     def print_summary(self):
         """Print test summary"""
         print("\n" + "=" * 50)
