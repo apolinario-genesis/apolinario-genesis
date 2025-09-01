@@ -128,8 +128,8 @@ export default function LoginScreen() {
               <Text style={styles.heartIcon}>💕</Text>
             </View>
             
-            <Text style={styles.title}>Nosso Diário</Text>
-            <Text style={styles.subtitle}>Entrar</Text>
+            <Text style={styles.title}>NOSSO DIÁRIO</Text>
+            <Text style={styles.subtitle}>ENTRAR</Text>
           </View>
 
           {/* Form */}
