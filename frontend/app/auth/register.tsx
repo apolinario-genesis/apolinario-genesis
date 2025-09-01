@@ -35,25 +35,47 @@ type FormData = z.infer<typeof schema>;
 export default function RegisterScreen() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FormData>({
-    resolver: zodResolver(schema),
-    defaultValues: {
-      name: '',
-      email: '',
-      password: '',
-      confirmPassword: '',
-    },
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const onSubmit = async (data: FormData) => {
-    console.log('🚀 Iniciando cadastro:', { name: data.name, email: data.email });
-    console.log('🚀 DADOS COMPLETOS:', data);
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+
+    if (!formData.name || formData.name.length < 2) {
+      newErrors.name = 'Nome deve ter pelo menos 2 caracteres';
+    }
+
+    if (!formData.email || !/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'Email inválido';
+    }
+
+    if (!formData.password || formData.password.length < 6) {
+      newErrors.password = 'Senha deve ter pelo menos 6 caracteres';
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = 'Senhas não coincidem';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const onSubmit = async () => {
+    console.log('🚀 Iniciando cadastro:', { name: formData.name, email: formData.email });
+    console.log('🚀 DADOS COMPLETOS:', formData);
     console.log('🚀 BACKEND_URL:', BACKEND_URL);
+
+    if (!validateForm()) {
+      console.log('❌ Validação falhou:', errors);
+      return;
+    }
+    
     setIsLoading(true);
     
     try {
