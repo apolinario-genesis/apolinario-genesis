@@ -116,6 +116,9 @@ backend:
       - working: true
         agent: "main"
         comment: "Sistema de autenticação implementado com JWT, registro e login funcionando. Testado com curl - usuário criado com sucesso."
+      - working: true
+        agent: "testing"
+        comment: "TESTE COMPLETO EXECUTADO: Criados usuários Maria Silva (maria.silva@teste.com) e João Santos (joao.santos@teste.com) com senha 'senha123'. Login de ambos funcionando perfeitamente. JWT tokens válidos. Validação de credenciais inválidas funcionando. Taxa de sucesso: 100%."
         
   - task: "Sistema de convite por código do casal"
     implemented: true
@@ -128,6 +131,57 @@ backend:
       - working: true
         agent: "testing"
         comment: "Sistema testado completamente pelo testing agent. Criou 2 usuários (João e Maria), testou login, conexão via código do casal funcionando perfeitamente. Taxa de sucesso: 81.8% melhorada para quase 100%."
+      - working: true
+        agent: "testing"
+        comment: "TESTE COMPLETO EXECUTADO: João conectou-se à Maria usando código do casal W3ASVS. Ambos usuários mostram partner_id e partner_name corretos após conexão. Verificação bidirecional funcionando perfeitamente. Taxa de sucesso: 100%."
+
+  - task: "Mural do Amor - Mensagens de amor"
+    implemented: true
+    working: true
+    file: "server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "TESTE COMPLETO EXECUTADO: Maria criou mensagem de amor 'Oi meu amor! Te amo muito! ❤️' para João. Mensagem salva corretamente com sender_name, recipient_id. João conseguiu recuperar a mensagem. Funcionalidade completa funcionando."
+
+  - task: "Agenda do Casal - Eventos"
+    implemented: true
+    working: true
+    file: "server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "TESTE COMPLETO EXECUTADO: Maria criou evento 'Jantar Romântico' com descrição, data futura, tipo 'date' e reminder ativo. Evento salvo corretamente com created_by_name. João conseguiu recuperar o evento. Funcionalidade completa funcionando."
+
+  - task: "Diário Compartilhado - Entradas"
+    implemented: true
+    working: true
+    file: "server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "TESTE COMPLETO EXECUTADO: João criou entrada no diário 'Nosso Primeiro Encontro' com conteúdo detalhado, mood 'romantic' e localização 'Café Central'. Entrada salva corretamente. Maria conseguiu recuperar a entrada. Funcionalidade completa funcionando."
+
+  - task: "Espaço Espiritual - Conteúdo religioso"
+    implemented: true
+    working: true
+    file: "server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "TESTE COMPLETO EXECUTADO: Maria criou conteúdo espiritual tipo 'prayer' com título 'Oração pela Nossa Relação', conteúdo, versículo bíblico e referência '1 Coríntios 13:4'. Conteúdo salvo corretamente. João conseguiu recuperar o conteúdo. Funcionalidade completa funcionando."
 
 frontend:
   - task: "Tela de boas-vindas responsiva"
