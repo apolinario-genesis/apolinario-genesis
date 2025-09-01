@@ -614,6 +614,100 @@ class BackendTester:
         except Exception as e:
             self.log_test("Invalid Login Prevention", False, "Request failed", str(e))
     
+    def test_specific_registration_fix(self):
+        """Test specific registration endpoint as requested for frontend fix confirmation"""
+        print("\n=== Testing Specific Registration Fix ===")
+        
+        # Test with exact data as requested
+        fix_user_data = {
+            "name": "Teste Fix",
+            "email": "teste.fix@exemplo.com",
+            "password": "123456"
+        }
+        
+        try:
+            response = self.session.post(f"{BACKEND_URL}/auth/register", json=fix_user_data)
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Validate response structure
+                required_fields = ["access_token", "token_type", "user"]
+                user_fields = ["id", "name", "email", "couple_code", "created_at"]
+                
+                missing_fields = [field for field in required_fields if field not in data]
+                missing_user_fields = [field for field in user_fields if field not in data["user"]]
+                
+                if not missing_fields and not missing_user_fields:
+                    token = data.get("access_token")
+                    user = data.get("user")
+                    
+                    if token and user["name"] == "Teste Fix" and user["email"] == "teste.fix@exemplo.com":
+                        self.log_test(
+                            "Specific Registration Fix Test", 
+                            True, 
+                            f"✅ CONFIRMADO: Endpoint /api/auth/register funcionando PERFEITAMENTE. Status 200, token JWT gerado, usuário criado com sucesso. Código do casal: {user['couple_code']}"
+                        )
+                        
+                        # Test immediate login to confirm token works
+                        self.test_immediate_login_after_registration(fix_user_data["email"], fix_user_data["password"])
+                    else:
+                        self.log_test(
+                            "Specific Registration Fix Test", 
+                            False, 
+                            "Response data incorrect",
+                            f"Expected name: Teste Fix, got: {user.get('name')}. Expected email: teste.fix@exemplo.com, got: {user.get('email')}"
+                        )
+                else:
+                    self.log_test(
+                        "Specific Registration Fix Test", 
+                        False, 
+                        "Response missing required fields",
+                        f"Missing: {missing_fields + missing_user_fields}"
+                    )
+            else:
+                self.log_test(
+                    "Specific Registration Fix Test", 
+                    False, 
+                    f"❌ FALHA: Registration failed with status {response.status_code}",
+                    response.text
+                )
+        except Exception as e:
+            self.log_test("Specific Registration Fix Test", False, "❌ FALHA: Request failed", str(e))
+    
+    def test_immediate_login_after_registration(self, email, password):
+        """Test login immediately after registration to confirm everything works"""
+        login_data = {
+            "email": email,
+            "password": password
+        }
+        
+        try:
+            response = self.session.post(f"{BACKEND_URL}/auth/login", json=login_data)
+            
+            if response.status_code == 200:
+                data = response.json()
+                token = data.get("access_token")
+                user = data.get("user")
+                
+                if token and user and user["email"] == email:
+                    self.log_test(
+                        "Immediate Login After Registration", 
+                        True, 
+                        "✅ CONFIRMADO: Login imediato após registro funcionando perfeitamente"
+                    )
+                else:
+                    self.log_test("Immediate Login After Registration", False, "Invalid response data", data)
+            else:
+                self.log_test(
+                    "Immediate Login After Registration", 
+                    False, 
+                    f"Login failed with status {response.status_code}",
+                    response.text
+                )
+        except Exception as e:
+            self.log_test("Immediate Login After Registration", False, "Request failed", str(e))
+    
     def run_all_tests(self):
         """Run all backend tests"""
         print("🚀 Starting Nosso Diário Backend Tests")
