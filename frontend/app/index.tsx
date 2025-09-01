@@ -9,9 +9,10 @@ import Card from './components/ui/Card';
 
 const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 
-export default function WelcomeScreen() {
+export default function AuthScreen() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
+  const [showRegister, setShowRegister] = useState(false);
 
   useEffect(() => {
     checkAuthStatus();
@@ -23,6 +24,7 @@ export default function WelcomeScreen() {
       const userData = await AsyncStorage.getItem('user_data');
       
       if (token && userData) {
+        console.log('🔍 Verificando token existente...');
         // Verify token is still valid
         const response = await fetch(`${BACKEND_URL}/api/auth/me`, {
           headers: {
@@ -33,6 +35,7 @@ export default function WelcomeScreen() {
         
         if (response.ok) {
           const user = await response.json();
+          console.log('✅ Token válido, redirecionando usuário logado');
           if (user.partner_id) {
             router.replace('/dashboard');
           } else {
@@ -40,6 +43,7 @@ export default function WelcomeScreen() {
           }
           return;
         } else {
+          console.log('❌ Token inválido, limpando dados');
           // Token is invalid, clear storage
           await AsyncStorage.multiRemove(['auth_token', 'user_data']);
         }
@@ -86,52 +90,49 @@ export default function WelcomeScreen() {
               <Text style={styles.verseRef}>Efésios 5:31</Text>
             </View>
 
-            {/* Features */}
-            <View style={styles.featuresContainer}>
-              <Card variant="feature" style={styles.feature}>
-                <View style={styles.featureIconContainer}>
-                  <Text style={styles.featureIcon}>💝</Text>
-                </View>
-                <Text style={styles.featureText}>Mural do Amor</Text>
-              </Card>
-              
-              <Card variant="feature" style={styles.feature}>
-                <View style={styles.featureIconContainer}>
-                  <Text style={styles.featureIcon}>📅</Text>
-                </View>
-                <Text style={styles.featureText}>Agenda do Casal</Text>
-              </Card>
-              
-              <Card variant="feature" style={styles.feature}>
-                <View style={styles.featureIconContainer}>
-                  <Text style={styles.featureIcon}>📖</Text>
-                </View>
-                <Text style={styles.featureText}>Espaço Espiritual</Text>
-              </Card>
-              
-              <Card variant="feature" style={styles.feature}>
-                <View style={styles.featureIconContainer}>
-                  <Text style={styles.featureIcon}>📝</Text>
-                </View>
-                <Text style={styles.featureText}>Diário Compartilhado</Text>
-              </Card>
-            </View>
+            {/* Auth Options */}
+            <View style={styles.authContainer}>
+              <Text style={styles.authTitle}>
+                {showRegister ? 'Criar Conta' : 'Fazer Login'}
+              </Text>
+              <Text style={styles.authSubtitle}>
+                {showRegister 
+                  ? 'Comece sua jornada em casal' 
+                  : 'Entre para continuar sua jornada'
+                }
+              </Text>
 
-            {/* Action Buttons */}
-            <View style={styles.buttonsContainer}>
-              <TouchableOpacity 
-                style={[styles.button, styles.primaryButton]}
-                onPress={() => router.push('/auth/login')}
-              >
-                <Text style={styles.primaryButtonText}>Entrar</Text>
-              </TouchableOpacity>
+              <View style={styles.buttonsContainer}>
+                <TouchableOpacity 
+                  style={[styles.button, styles.primaryButton]}
+                  onPress={() => {
+                    console.log('🔐 Navegando para:', showRegister ? 'register' : 'login');
+                    router.push(showRegister ? '/auth/register' : '/auth/login');
+                  }}
+                >
+                  <Text style={styles.primaryButtonText}>
+                    {showRegister ? '📝 Cadastrar' : '🔐 Entrar'}
+                  </Text>
+                </TouchableOpacity>
 
-              <TouchableOpacity 
-                style={[styles.button, styles.secondaryButton]}
-                onPress={() => router.push('/auth/register')}
-              >
-                <Text style={styles.secondaryButtonText}>Cadastrar</Text>
-              </TouchableOpacity>
+                <TouchableOpacity 
+                  style={[styles.button, styles.secondaryButton]}
+                  onPress={() => setShowRegister(!showRegister)}
+                >
+                  <Text style={styles.secondaryButtonText}>
+                    {showRegister ? 'Já tem conta? Fazer Login' : 'Não tem conta? Cadastrar'}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              {/* App Benefits */}
+              <View style={styles.benefitsContainer}>
+                <Text style={styles.benefitsTitle}>💝 O que vocês encontrarão:</Text>
+                <Text style={styles.benefitItem}>💕 Mural do Amor - Mensagens românticas</Text>
+                <Text style={styles.benefitItem}>📅 Agenda do Casal - Datas importantes</Text>
+                <Text style={styles.benefitItem}>📝 Diário Compartilhado - Momentos especiais</Text>
+                <Text style={styles.benefitItem}>📖 Espaço Espiritual - Orações e reflexões</Text>
+              </View>
             </View>
           </View>
         </KeyboardAvoidingView>
