@@ -52,6 +52,8 @@ export default function RegisterScreen() {
 
   const onSubmit = async (data: FormData) => {
     console.log('🚀 Iniciando cadastro:', { name: data.name, email: data.email });
+    console.log('🚀 DADOS COMPLETOS:', data);
+    console.log('🚀 BACKEND_URL:', BACKEND_URL);
     setIsLoading(true);
     
     try {
