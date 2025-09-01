@@ -138,8 +138,8 @@ class BackendTester:
                 token = data.get("access_token")
                 user = data.get("user")
                 
-                if token and user and user["name"] == "João Silva":
-                    self.log_test("João Login", True, "Login successful")
+                if token and user and user["name"] == "Maria Silva":
+                    self.log_test("Maria Login", True, "Login successful")
                     # Update token in case it changed
                     self.user1_token = token
                 else:
