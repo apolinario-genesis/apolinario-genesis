@@ -45,8 +45,12 @@ export default function RegisterScreen() {
   });
 
   const onSubmit = async (data: FormData) => {
+    console.log('🚀 Iniciando cadastro:', { name: data.name, email: data.email });
     setIsLoading(true);
+    
     try {
+      console.log('📡 Enviando requisição para:', `${BACKEND_URL}/api/auth/register`);
+      
       const response = await fetch(`${BACKEND_URL}/api/auth/register`, {
         method: 'POST',
         headers: {
@@ -59,21 +63,45 @@ export default function RegisterScreen() {
         }),
       });
 
+      console.log('📥 Resposta recebida:', response.status, response.statusText);
       const result = await response.json();
+      console.log('📋 Dados da resposta:', result);
 
       if (response.ok) {
+        console.log('✅ Cadastro realizado com sucesso');
+        
         // Store auth data
         await AsyncStorage.setItem('auth_token', result.access_token);
         await AsyncStorage.setItem('user_data', JSON.stringify(result.user));
+        
+        console.log('💾 Dados salvos no AsyncStorage');
 
-        Alert.alert('Sucesso', 'Conta criada com sucesso!');
-        router.replace('/couple-setup');
+        Alert.alert(
+          'Cadastro Completo! 🎉', 
+          `Olá, ${result.user.name}! Sua conta foi criada com sucesso.\n\nSeu código do casal é: ${result.user.couple_code}\n\nAgora você pode convidar seu parceiro(a)!`,
+          [
+            {
+              text: 'Continuar',
+              onPress: () => {
+                console.log('🔄 Navegando para couple-setup');
+                router.replace('/couple-setup');
+              }
+            }
+          ]
+        );
       } else {
-        Alert.alert('Erro', result.detail || 'Erro ao criar conta');
+        console.log('❌ Erro no cadastro:', result);
+        Alert.alert('Erro no Cadastro', result.detail || 'Não foi possível criar sua conta. Tente novamente.');
       }
     } catch (error) {
-      console.error('Register error:', error);
-      Alert.alert('Erro', 'Erro de conexão. Tente novamente.');
+      console.error('💥 Erro de conexão:', error);
+      Alert.alert(
+        'Erro de Conexão', 
+        'Não foi possível conectar ao servidor. Verifique sua internet e tente novamente.',
+        [
+          { text: 'Tentar Novamente', onPress: () => setIsLoading(false) }
+        ]
+      );
     } finally {
       setIsLoading(false);
     }
