@@ -14,7 +14,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import ResponsiveContainer from './components/ui/ResponsiveContainer';
 import Card from './components/ui/Card';
 import Header from './components/ui/Header';
-import NotificationBell from './components/NotificationBell';
+// import NotificationBell from './components/NotificationBell';
 import NotificationService from './services/NotificationService';
 
 export default function DashboardScreen() {
