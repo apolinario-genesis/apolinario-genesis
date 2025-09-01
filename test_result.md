@@ -119,6 +119,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "TESTE COMPLETO EXECUTADO: Criados usuários Maria Silva (maria.silva@teste.com) e João Santos (joao.santos@teste.com) com senha 'senha123'. Login de ambos funcionando perfeitamente. JWT tokens válidos. Validação de credenciais inválidas funcionando. Taxa de sucesso: 100%."
+      - working: true
+        agent: "testing"
+        comment: "TESTE ESPECÍFICO DO ENDPOINT DE REGISTRO EXECUTADO: Testado endpoint /api/auth/register com dados exatos do usuário (Usuario Teste, usuario.teste@teste.com, 123456). RESULTADO: Endpoint funcionando PERFEITAMENTE. Registro retorna 200 OK, cria usuário com sucesso, gera token JWT válido, permite login imediato. Testado também com usuários únicos (Ana Carolina e Pedro Silva) - registro, login e conexão de casal funcionando 100%. Problema NÃO está no backend - endpoint de registro está operacional."
         
   - task: "Sistema de convite por código do casal"
     implemented: true
