@@ -252,10 +252,9 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Sistema de autenticação com JWT"
-    - "Sistema de convite por código do casal"
     - "Telas de autenticação (login/registro)"
     - "Tela de setup do casal (códigos)"
+    - "Dashboard principal"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
@@ -263,3 +262,5 @@ test_plan:
 agent_communication:
   - agent: "main"
     message: "FASE 1 implementada: Sistema de autenticação, navegação e telas principais. Backend com JWT funcionando (testado via curl). Frontend com design responsivo carregando perfeitamente. Pronto para testes completos do fluxo de autenticação e conexão de casal."
+  - agent: "testing"
+    message: "TESTE COMPLETO EXECUTADO COM SUCESSO! Testado cenário exato solicitado: Criados usuários Maria Silva (maria.silva@teste.com) e João Santos (joao.santos@teste.com) com senha 'senha123'. Conectados como casal usando código W3ASVS. Testadas TODAS as funcionalidades principais: Mural do Amor, Agenda do Casal, Diário Compartilhado e Espaço Espiritual. Taxa de sucesso: 100% (19/19 testes). Backend completamente funcional. URL base: https://sacredbond.preview.emergentagent.com/api"
