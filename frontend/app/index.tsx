@@ -225,6 +225,8 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   buttonsContainer: {
+    paddingHorizontal: 32,
+    paddingBottom: 60,
     gap: 16,
   },
   button: {
