@@ -123,28 +123,7 @@ export default function AuthScreen() {
               </View>
             </View>
 
-            {/* App Features Preview */}
-            <View style={styles.featuresSection}>
-              <Text style={styles.featuresTitle}>FUNCIONALIDADES DO APP</Text>
-              <View style={styles.featuresGrid}>
-                <View style={styles.featureItem}>
-                  <Text style={styles.featureIcon}>💝</Text>
-                  <Text style={styles.featureText}>Mural do Amor</Text>
-                </View>
-                <View style={styles.featureItem}>
-                  <Text style={styles.featureIcon}>📅</Text>
-                  <Text style={styles.featureText}>Agenda do Casal</Text>
-                </View>
-                <View style={styles.featureItem}>
-                  <Text style={styles.featureIcon}>📝</Text>
-                  <Text style={styles.featureText}>Diário Compartilhado</Text>
-                </View>
-                <View style={styles.featureItem}>
-                  <Text style={styles.featureIcon}>📖</Text>
-                  <Text style={styles.featureText}>Espaço Espiritual</Text>
-                </View>
-              </View>
-            </View>
+
           </View>
         </KeyboardAvoidingView>
       </ResponsiveContainer>
