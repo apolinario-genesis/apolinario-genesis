@@ -76,62 +76,73 @@ export default function AuthScreen() {
           style={styles.container}
         >
           <View style={styles.content}>
-            {/* Header */}
+            {/* Clean Header */}
             <View style={styles.header}>
               <View style={styles.logoContainer}>
                 <Text style={styles.heartIcon}>💕</Text>
               </View>
-              <Text style={styles.title}>Nosso Diário</Text>
+              <Text style={styles.title}>NOSSO DIÁRIO</Text>
               <Text style={styles.subtitle}>Aplicativo para Casais Cristãos</Text>
-              <Text style={styles.verse}>
-                "Portanto, deixará o homem pai e mãe e se unirá à sua mulher, 
-                e serão dois uma só carne."
-              </Text>
-              <Text style={styles.verseRef}>Efésios 5:31</Text>
             </View>
 
-            {/* Auth Options */}
-            <View style={styles.authContainer}>
-              <Text style={styles.authTitle}>
-                {showRegister ? 'Criar Conta' : 'Fazer Login'}
-              </Text>
-              <Text style={styles.authSubtitle}>
-                {showRegister 
-                  ? 'Comece sua jornada em casal' 
-                  : 'Entre para continuar sua jornada'
-                }
-              </Text>
+            {/* Auth Section */}
+            <View style={styles.authSection}>
+              <View style={styles.authCard}>
+                <Text style={styles.authTitle}>
+                  {showRegister ? 'CRIAR CONTA' : 'FAZER LOGIN'}
+                </Text>
+                <Text style={styles.authSubtitle}>
+                  {showRegister 
+                    ? 'Comece sua jornada em casal' 
+                    : 'Entre para continuar sua jornada'
+                  }
+                </Text>
 
-              <View style={styles.buttonsContainer}>
-                <TouchableOpacity 
-                  style={[styles.button, styles.primaryButton]}
-                  onPress={() => {
-                    console.log('🔐 Navegando para:', showRegister ? 'register' : 'login');
-                    router.push(showRegister ? '/auth/register' : '/auth/login');
-                  }}
-                >
-                  <Text style={styles.primaryButtonText}>
-                    {showRegister ? '📝 Cadastrar' : '🔐 Entrar'}
-                  </Text>
-                </TouchableOpacity>
+                <View style={styles.buttonsContainer}>
+                  <TouchableOpacity 
+                    style={[styles.button, styles.primaryButton]}
+                    onPress={() => {
+                      console.log('🔐 Navegando para:', showRegister ? 'register' : 'login');
+                      router.push(showRegister ? '/auth/register' : '/auth/login');
+                    }}
+                  >
+                    <Text style={styles.primaryButtonText}>
+                      {showRegister ? 'CADASTRAR' : 'ENTRAR'}
+                    </Text>
+                  </TouchableOpacity>
 
-                <TouchableOpacity 
-                  style={[styles.button, styles.secondaryButton]}
-                  onPress={() => setShowRegister(!showRegister)}
-                >
-                  <Text style={styles.secondaryButtonText}>
-                    {showRegister ? 'Já tem conta? Fazer Login' : 'Não tem conta? Cadastrar'}
-                  </Text>
-                </TouchableOpacity>
+                  <TouchableOpacity 
+                    style={[styles.button, styles.secondaryButton]}
+                    onPress={() => setShowRegister(!showRegister)}
+                  >
+                    <Text style={styles.secondaryButtonText}>
+                      {showRegister ? 'Já tem conta? Fazer Login' : 'Não tem conta? Cadastrar'}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
               </View>
+            </View>
 
-              {/* App Benefits */}
-              <View style={styles.benefitsContainer}>
-                <Text style={styles.benefitsTitle}>💝 O que vocês encontrarão:</Text>
-                <Text style={styles.benefitItem}>💕 Mural do Amor - Mensagens românticas</Text>
-                <Text style={styles.benefitItem}>📅 Agenda do Casal - Datas importantes</Text>
-                <Text style={styles.benefitItem}>📝 Diário Compartilhado - Momentos especiais</Text>
-                <Text style={styles.benefitItem}>📖 Espaço Espiritual - Orações e reflexões</Text>
+            {/* App Features Preview */}
+            <View style={styles.featuresSection}>
+              <Text style={styles.featuresTitle}>FUNCIONALIDADES DO APP</Text>
+              <View style={styles.featuresGrid}>
+                <View style={styles.featureItem}>
+                  <Text style={styles.featureIcon}>💝</Text>
+                  <Text style={styles.featureText}>Mural do Amor</Text>
+                </View>
+                <View style={styles.featureItem}>
+                  <Text style={styles.featureIcon}>📅</Text>
+                  <Text style={styles.featureText}>Agenda do Casal</Text>
+                </View>
+                <View style={styles.featureItem}>
+                  <Text style={styles.featureIcon}>📝</Text>
+                  <Text style={styles.featureText}>Diário Compartilhado</Text>
+                </View>
+                <View style={styles.featureItem}>
+                  <Text style={styles.featureIcon}>📖</Text>
+                  <Text style={styles.featureText}>Espaço Espiritual</Text>
+                </View>
               </View>
             </View>
           </View>
