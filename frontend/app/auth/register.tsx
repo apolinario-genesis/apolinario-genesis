@@ -87,9 +87,9 @@ export default function RegisterScreen() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          name: data.name,
-          email: data.email,
-          password: data.password,
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
         }),
       });
 
