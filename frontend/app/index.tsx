@@ -272,4 +272,26 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
   },
+  benefitsContainer: {
+    backgroundColor: '#F9F1F3',
+    padding: 20,
+    borderRadius: 16,
+    marginTop: 32,
+    borderWidth: 1,
+    borderColor: '#F4E6EA',
+  },
+  benefitsTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#8B4B6B',
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  benefitItem: {
+    fontSize: 14,
+    color: '#8B4B6B',
+    lineHeight: 22,
+    marginBottom: 8,
+    paddingLeft: 8,
+  },
 });
