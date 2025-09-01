@@ -241,7 +241,10 @@ export default function RegisterScreen() {
               style={[styles.submitButton, isLoading && styles.submitButtonDisabled]}
               onPress={() => {
                 console.log('🔘 Botão cadastrar pressionado');
-                handleSubmit(onSubmit)();
+                console.log('🔍 Tentando validar e submeter formulário...');
+                const submitHandler = handleSubmit(onSubmit);
+                console.log('🔍 HandleSubmit criado:', typeof submitHandler);
+                submitHandler();
               }}
               disabled={isLoading}
             >
