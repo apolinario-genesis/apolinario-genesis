@@ -261,51 +261,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
   },
-  // Features Section
-  featuresSection: {
-    flex: 1,
-  },
-  featuresTitle: {
-    fontSize: 16,
-    fontWeight: '800',
-    color: '#8B4B6B',
-    textAlign: 'center',
-    marginBottom: 20,
-    letterSpacing: 0.5,
-  },
-  featuresGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    paddingHorizontal: 8,
-  },
-  featureItem: {
-    width: '48%',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 20,
-    alignItems: 'center',
-    marginBottom: 16,
-    shadowColor: '#D4A5B0',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 3,
-    borderWidth: 1,
-    borderColor: '#F4E6EA',
-  },
-  featureIcon: {
-    fontSize: 28,
-    marginBottom: 12,
-  },
-  featureText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#8B4B6B',
-    textAlign: 'center',
-    lineHeight: 16,
-  },
+
 });
