@@ -14,23 +14,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 
 const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
-
-const schema = z.object({
-  name: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres'),
-  email: z.string().email('Email inválido'),
-  password: z.string().min(6, 'Senha deve ter pelo menos 6 caracteres'),
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Senhas não coincidem",
-  path: ["confirmPassword"],
-});
-
-type FormData = z.infer<typeof schema>;
 
 export default function RegisterScreen() {
   const router = useRouter();
@@ -185,73 +170,61 @@ export default function RegisterScreen() {
 
             <View style={styles.inputContainer}>
               <Text style={styles.label}>E-mail</Text>
-              <Controller
-                control={control}
-                name="email"
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <TextInput
-                    style={[styles.input, errors.email && styles.inputError]}
-                    placeholder="Digite seu email"
-                    placeholderTextColor="#A66B7A"
-                    value={value || ''}
-                    onChangeText={onChange}
-                    onBlur={onBlur}
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                  />
-                )}
+              <TextInput
+                style={[styles.input, errors.email && styles.inputError]}
+                placeholder="Digite seu email"
+                placeholderTextColor="#A66B7A"
+                value={formData.email}
+                onChangeText={(text) => {
+                  setFormData({...formData, email: text});
+                  if (errors.email) setErrors({...errors, email: ''});
+                }}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCorrect={false}
               />
               {errors.email && (
-                <Text style={styles.errorText}>{errors.email.message}</Text>
+                <Text style={styles.errorText}>{errors.email}</Text>
               )}
             </View>
 
             <View style={styles.inputContainer}>
               <Text style={styles.label}>Senha</Text>
-              <Controller
-                control={control}
-                name="password"
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <TextInput
-                    style={[styles.input, errors.password && styles.inputError]}
-                    placeholder="Digite sua senha"
-                    placeholderTextColor="#A66B7A"
-                    value={value || ''}
-                    onChangeText={onChange}
-                    onBlur={onBlur}
-                    secureTextEntry
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                  />
-                )}
+              <TextInput
+                style={[styles.input, errors.password && styles.inputError]}
+                placeholder="Digite sua senha"
+                placeholderTextColor="#A66B7A"
+                value={formData.password}
+                onChangeText={(text) => {
+                  setFormData({...formData, password: text});
+                  if (errors.password) setErrors({...errors, password: ''});
+                }}
+                secureTextEntry
+                autoCapitalize="none"
+                autoCorrect={false}
               />
               {errors.password && (
-                <Text style={styles.errorText}>{errors.password.message}</Text>
+                <Text style={styles.errorText}>{errors.password}</Text>
               )}
             </View>
 
             <View style={styles.inputContainer}>
               <Text style={styles.label}>Confirmar senha</Text>
-              <Controller
-                control={control}
-                name="confirmPassword"
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <TextInput
-                    style={[styles.input, errors.confirmPassword && styles.inputError]}
-                    placeholder="Confirme sua senha"
-                    placeholderTextColor="#A66B7A"
-                    value={value || ''}
-                    onChangeText={onChange}
-                    onBlur={onBlur}
-                    secureTextEntry
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                  />
-                )}
+              <TextInput
+                style={[styles.input, errors.confirmPassword && styles.inputError]}
+                placeholder="Confirme sua senha"
+                placeholderTextColor="#A66B7A"
+                value={formData.confirmPassword}
+                onChangeText={(text) => {
+                  setFormData({...formData, confirmPassword: text});
+                  if (errors.confirmPassword) setErrors({...errors, confirmPassword: ''});
+                }}
+                secureTextEntry
+                autoCapitalize="none"
+                autoCorrect={false}
               />
               {errors.confirmPassword && (
-                <Text style={styles.errorText}>{errors.confirmPassword.message}</Text>
+                <Text style={styles.errorText}>{errors.confirmPassword}</Text>
               )}
             </View>
 
@@ -259,10 +232,8 @@ export default function RegisterScreen() {
               style={[styles.submitButton, isLoading && styles.submitButtonDisabled]}
               onPress={() => {
                 console.log('🔘 Botão cadastrar pressionado');
-                console.log('🔍 Tentando validar e submeter formulário...');
-                const submitHandler = handleSubmit(onSubmit);
-                console.log('🔍 HandleSubmit criado:', typeof submitHandler);
-                submitHandler();
+                console.log('🔍 Chamando onSubmit diretamente...');
+                onSubmit();
               }}
               disabled={isLoading}
             >
