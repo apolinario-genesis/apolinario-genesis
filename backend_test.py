@@ -22,10 +22,9 @@ class BackendTester:
         self.user1_data = None
         self.user2_data = None
         self.test_results = []
-        # Generate unique emails for each test run
-        self.test_id = ''.join(random.choices(string.ascii_lowercase + string.digits, k=6))
-        self.user1_email = f"joao.silva.{self.test_id}@gmail.com"
-        self.user2_email = f"maria.santos.{self.test_id}@gmail.com"
+        # Use specific test emails as requested
+        self.user1_email = "maria.silva@teste.com"
+        self.user2_email = "joao.santos@teste.com"
         
     def log_test(self, test_name, success, message, details=None):
         """Log test results"""
