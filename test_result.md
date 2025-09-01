@@ -213,15 +213,18 @@ frontend:
         
   - task: "Telas de autenticação (login/registro)"
     implemented: true
-    working: "NA"
+    working: false
     file: "app/auth/login.tsx, app/auth/register.tsx"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
     needs_retesting: true
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Telas implementadas com formulários validados usando react-hook-form e zod, mas ainda não testadas completamente."
+      - working: false
+        agent: "main"
+        comment: "PROBLEMA IDENTIFICADO: Cadastro não está funcionando no frontend. Usuário relatou que 'quando estou apertando em cadastrar não está criando a conta'. Backend testado e funcionando 100%. Problema no frontend: React Hook Form não está submetendo - sem logs de debug aparecendo no console. Corrigido problema de inputs controlled/uncontrolled, mas handleSubmit ainda não executando."
 
   - task: "Tela de setup do casal (códigos)"
     implemented: true
