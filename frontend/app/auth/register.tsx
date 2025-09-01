@@ -239,7 +239,10 @@ export default function RegisterScreen() {
 
             <TouchableOpacity 
               style={[styles.submitButton, isLoading && styles.submitButtonDisabled]}
-              onPress={handleSubmit(onSubmit)}
+              onPress={() => {
+                console.log('🔘 Botão cadastrar pressionado');
+                handleSubmit(onSubmit)();
+              }}
               disabled={isLoading}
             >
               <Text style={styles.submitButtonText}>
