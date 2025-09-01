@@ -163,7 +163,8 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    marginTop: 60,
+    marginTop: 40,
+    marginBottom: 40,
   },
   logoContainer: {
     width: 80,
@@ -212,37 +213,26 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#A66B7A',
     textAlign: 'center',
-    marginBottom: 40,
+    marginBottom: 20,
     fontWeight: '600',
   },
-  featuresContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    marginBottom: 40,
-    paddingHorizontal: 8,
-  },
-  feature: {
-    alignItems: 'center',
-  },
-  featureIconContainer: {
-    width: 50,
-    height: 50,
-    backgroundColor: '#F9F1F3',
-    borderRadius: 25,
+  authContainer: {
+    flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 12,
   },
-  featureIcon: {
-    fontSize: 24,
-  },
-  featureText: {
+  authTitle: {
+    fontSize: 28,
+    fontWeight: '700',
     color: '#8B4B6B',
-    fontSize: 14,
-    fontWeight: '600',
     textAlign: 'center',
-    lineHeight: 20,
+    marginBottom: 8,
+  },
+  authSubtitle: {
+    fontSize: 16,
+    color: '#A66B7A',
+    textAlign: 'center',
+    marginBottom: 40,
+    fontWeight: '500',
   },
   buttonsContainer: {
     paddingBottom: 50,
