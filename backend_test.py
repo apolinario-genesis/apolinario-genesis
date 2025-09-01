@@ -12,7 +12,7 @@ import random
 import string
 
 # Backend URL from frontend/.env
-BACKEND_URL = "https://sacredbond.preview.emergentagent.com/api"
+BACKEND_URL = "https://nosso-diario.preview.emergentagent.com/api"
 
 class BackendTester:
     def __init__(self):
