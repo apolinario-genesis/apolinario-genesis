@@ -772,7 +772,12 @@ class BackendTester:
 
 if __name__ == "__main__":
     tester = BackendTester()
-    success = tester.run_all_tests()
+    
+    # Check if we should run quick test or full test
+    if len(sys.argv) > 1 and sys.argv[1] == "--quick":
+        success = tester.run_quick_registration_test()
+    else:
+        success = tester.run_all_tests()
     
     # Exit with appropriate code
     sys.exit(0 if success else 1)
