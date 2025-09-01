@@ -90,11 +90,11 @@ class BackendTester:
         except Exception as e:
             self.log_test("User 1 Registration", False, "Request failed", str(e))
         
-        # Test User 2 (Maria)
+        # Test User 2 (João)
         user2_data = {
-            "name": "Maria Santos",
-            "email": "maria.santos@gmail.com", 
-            "password": "MinhaSenh@456"
+            "name": "João Santos",
+            "email": "joao.santos@teste.com", 
+            "password": "senha123"
         }
         
         try:
