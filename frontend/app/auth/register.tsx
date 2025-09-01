@@ -152,7 +152,7 @@ export default function RegisterScreen() {
                     style={[styles.input, errors.name && styles.inputError]}
                     placeholder="Digite seu nome completo"
                     placeholderTextColor="#A66B7A"
-                    value={value}
+                    value={value || ''}
                     onChangeText={onChange}
                     onBlur={onBlur}
                     autoCapitalize="words"
