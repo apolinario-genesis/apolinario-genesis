@@ -175,7 +175,7 @@ export default function RegisterScreen() {
                     style={[styles.input, errors.email && styles.inputError]}
                     placeholder="Digite seu email"
                     placeholderTextColor="#A66B7A"
-                    value={value}
+                    value={value || ''}
                     onChangeText={onChange}
                     onBlur={onBlur}
                     keyboardType="email-address"
