@@ -108,7 +108,7 @@ class BackendTester:
                 self.log_test(
                     "User 2 Registration", 
                     True, 
-                    f"Maria registered successfully with couple code: {self.user2_data['couple_code']}"
+                    f"João registered successfully with couple code: {self.user2_data['couple_code']}"
                 )
             else:
                 self.log_test(
