@@ -166,24 +166,20 @@ export default function RegisterScreen() {
           <View style={styles.form}>
             <View style={styles.inputContainer}>
               <Text style={styles.label}>Nome</Text>
-              <Controller
-                control={control}
-                name="name"
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <TextInput
-                    style={[styles.input, errors.name && styles.inputError]}
-                    placeholder="Digite seu nome completo"
-                    placeholderTextColor="#A66B7A"
-                    value={value || ''}
-                    onChangeText={onChange}
-                    onBlur={onBlur}
-                    autoCapitalize="words"
-                    autoCorrect={false}
-                  />
-                )}
+              <TextInput
+                style={[styles.input, errors.name && styles.inputError]}
+                placeholder="Digite seu nome completo"
+                placeholderTextColor="#A66B7A"
+                value={formData.name}
+                onChangeText={(text) => {
+                  setFormData({...formData, name: text});
+                  if (errors.name) setErrors({...errors, name: ''});
+                }}
+                autoCapitalize="words"
+                autoCorrect={false}
               />
               {errors.name && (
-                <Text style={styles.errorText}>{errors.name.message}</Text>
+                <Text style={styles.errorText}>{errors.name}</Text>
               )}
             </View>
 
