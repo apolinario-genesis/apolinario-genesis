@@ -223,7 +223,7 @@ export default function RegisterScreen() {
                     style={[styles.input, errors.confirmPassword && styles.inputError]}
                     placeholder="Confirme sua senha"
                     placeholderTextColor="#A66B7A"
-                    value={value}
+                    value={value || ''}
                     onChangeText={onChange}
                     onBlur={onBlur}
                     secureTextEntry
