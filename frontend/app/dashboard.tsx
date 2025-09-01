@@ -13,9 +13,6 @@ import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ResponsiveContainer from './components/ui/ResponsiveContainer';
 import Card from './components/ui/Card';
-import Header from './components/ui/Header';
-// import NotificationBell from './components/NotificationBell';
-import NotificationService from './services/NotificationService';
 
 export default function DashboardScreen() {
   const router = useRouter();
@@ -24,7 +21,7 @@ export default function DashboardScreen() {
 
   useEffect(() => {
     loadUserData();
-    initializeNotifications();
+    sendWelcomeNotification();
   }, []);
 
   const loadUserData = async () => {
@@ -33,6 +30,7 @@ export default function DashboardScreen() {
       if (userDataString) {
         const user = JSON.parse(userDataString);
         setUserData(user);
+        console.log('📊 Dados do usuário carregados:', user);
       }
     } catch (error) {
       console.error('Error loading user data:', error);
@@ -41,16 +39,15 @@ export default function DashboardScreen() {
     }
   };
 
-  const initializeNotifications = async () => {
-    const notificationService = NotificationService.getInstance();
-    await notificationService.initialize();
-    
-    // Send a welcome notification
-    await notificationService.addNotification({
-      title: '🌅 Bem-vindos!',
-      message: 'Vocês estão conectados! Explorem juntos todas as funcionalidades do Nosso Diário.',
-      type: 'reminder',
-    });
+  const sendWelcomeNotification = async () => {
+    // Simulated welcome notification
+    setTimeout(() => {
+      Alert.alert(
+        '🔔 Bem-vindos!', 
+        'Vocês estão conectados! Explorem juntos todas as funcionalidades do Nosso Diário.',
+        [{ text: 'OK' }]
+      );
+    }, 2000);
   };
 
   const logout = async () => {
@@ -65,6 +62,7 @@ export default function DashboardScreen() {
           onPress: async () => {
             try {
               await AsyncStorage.multiRemove(['auth_token', 'user_data']);
+              console.log('🚪 Logout realizado');
               router.replace('/');
             } catch (error) {
               console.error('Error logging out:', error);
@@ -76,14 +74,15 @@ export default function DashboardScreen() {
   };
 
   const navigateToFeature = (route: string) => {
+    console.log('🔗 Navegando para:', route);
     router.push(route);
   };
 
   const showNotifications = () => {
     Alert.alert(
       '🔔 Notificações',
-      'Sistema de notificações ativo! Vocês receberão lembretes sobre eventos, mensagens e atividades.',
-      [{ text: 'OK' }]
+      'Sistema de notificações ativo! Vocês receberão lembretes sobre:\n\n• Mensagens de amor recebidas\n• Eventos próximos\n• Novo conteúdo espiritual\n• Lembretes diários',
+      [{ text: 'Entendi' }]
     );
   };
 
@@ -115,7 +114,12 @@ export default function DashboardScreen() {
               )}
             </View>
             <View style={styles.headerActions}>
-              <NotificationBell onPress={showNotifications} />
+              <TouchableOpacity style={styles.notificationButton} onPress={showNotifications}>
+                <Text style={styles.notificationIcon}>🔔</Text>
+                <View style={styles.notificationBadge}>
+                  <Text style={styles.badgeText}>3</Text>
+                </View>
+              </TouchableOpacity>
               <TouchableOpacity style={styles.logoutButton} onPress={logout}>
                 <Text style={styles.logoutText}>Sair</Text>
               </TouchableOpacity>
@@ -190,7 +194,7 @@ export default function DashboardScreen() {
 
             <Card 
               variant="feature"
-              onPress={() => Alert.alert('Em breve', 'Esta funcionalidade está sendo desenvolvida! 🎯')}
+              onPress={() => Alert.alert('Em breve', 'Desafios semanais serão implementados em breve! 🎯')}
             >
               <View style={styles.featureIconContainer}>
                 <Text style={styles.featureIcon}>🎯</Text>
@@ -203,7 +207,7 @@ export default function DashboardScreen() {
 
             <Card 
               variant="feature"
-              onPress={() => Alert.alert('Em breve', 'Esta funcionalidade está sendo desenvolvida! ❤️')}
+              onPress={() => Alert.alert('Em breve', 'Sistema de emoções diárias será implementado em breve! ❤️')}
             >
               <View style={styles.featureIconContainer}>
                 <Text style={styles.featureIcon}>❤️</Text>
@@ -268,6 +272,30 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
+  },
+  notificationButton: {
+    position: 'relative',
+    padding: 8,
+  },
+  notificationIcon: {
+    fontSize: 24,
+  },
+  notificationBadge: {
+    position: 'absolute',
+    top: 2,
+    right: 2,
+    backgroundColor: '#E57373',
+    borderRadius: 10,
+    minWidth: 20,
+    height: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 6,
+  },
+  badgeText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: 'bold',
   },
   logoutButton: {
     paddingHorizontal: 12,

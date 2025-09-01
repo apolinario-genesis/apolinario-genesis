@@ -15,6 +15,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ResponsiveContainer from './components/ui/ResponsiveContainer';
 
 const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 
@@ -36,6 +37,7 @@ export default function CoupleSetupScreen() {
         const user = JSON.parse(userData);
         setUserName(user.name);
         setUserCoupleCode(user.couple_code || '');
+        console.log('👤 Dados do usuário carregados:', user);
       }
     } catch (error) {
       console.error('Error loading user data:', error);
@@ -48,9 +50,13 @@ export default function CoupleSetupScreen() {
       return;
     }
 
+    console.log('👫 Tentando conectar com código:', coupleCode.toUpperCase());
     setIsLoading(true);
+    
     try {
       const token = await AsyncStorage.getItem('auth_token');
+      console.log('🔐 Token obtido:', token ? 'Token válido' : 'Token não encontrado');
+      
       const response = await fetch(`${BACKEND_URL}/api/auth/join-couple`, {
         method: 'POST',
         headers: {
@@ -62,28 +68,60 @@ export default function CoupleSetupScreen() {
         }),
       });
 
+      console.log('📥 Resposta da conexão:', response.status, response.statusText);
       const result = await response.json();
+      console.log('📋 Resultado da conexão:', result);
 
       if (response.ok) {
-        Alert.alert('Sucesso!', `Vocês agora estão conectados como casal! 💕\nSeu parceiro(a): ${result.partner_name}`);
-        
-        // Update user data
-        const userData = await AsyncStorage.getItem('user_data');
-        if (userData) {
-          const user = JSON.parse(userData);
-          user.partner_name = result.partner_name;
-          await AsyncStorage.setItem('user_data', JSON.stringify(user));
-        }
-        
-        router.replace('/dashboard');
+        Alert.alert(
+          'Vocês estão conectados! 💕🎉', 
+          `Sucesso! Agora vocês estão oficialmente conectados como casal.\n\nSeu parceiro(a): ${result.partner_name}\n\nVocês podem acessar todas as funcionalidades juntos!`,
+          [
+            {
+              text: 'Começar Jornada',
+              onPress: () => {
+                // Update user data with partner info
+                updateUserData(result.partner_name);
+                console.log('🏠 Navegando para dashboard após conexão');
+                router.replace('/dashboard');
+              }
+            }
+          ]
+        );
       } else {
-        Alert.alert('Erro', result.detail || 'Código inválido');
+        console.log('❌ Erro na conexão:', result);
+        if (result.detail === 'Invalid couple code') {
+          Alert.alert('Código Inválido', 'O código informado não existe. Verifique com seu parceiro(a) e tente novamente.');
+        } else if (result.detail === 'You already have a partner') {
+          Alert.alert('Já Conectado', 'Você já está conectado(a) com um parceiro(a).');
+        } else if (result.detail === 'This person already has a partner') {
+          Alert.alert('Parceiro Ocupado', 'Esta pessoa já está conectada com outro parceiro(a).');
+        } else {
+          Alert.alert('Erro', result.detail || 'Não foi possível conectar. Tente novamente.');
+        }
       }
     } catch (error) {
-      console.error('Join couple error:', error);
-      Alert.alert('Erro', 'Erro de conexão. Tente novamente.');
+      console.error('💥 Erro na conexão do casal:', error);
+      Alert.alert(
+        'Erro de Conexão', 
+        'Não foi possível conectar ao servidor. Verifique sua internet e tente novamente.'
+      );
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const updateUserData = async (partnerName: string) => {
+    try {
+      const userData = await AsyncStorage.getItem('user_data');
+      if (userData) {
+        const user = JSON.parse(userData);
+        user.partner_name = partnerName;
+        await AsyncStorage.setItem('user_data', JSON.stringify(user));
+        console.log('💾 Dados do usuário atualizados com parceiro');
+      }
+    } catch (error) {
+      console.error('Error updating user data:', error);
     }
   };
 
@@ -93,6 +131,7 @@ export default function CoupleSetupScreen() {
         message: `Olá! Vamos nos conectar no Nosso Diário! 💕\n\nMeu código do casal é: ${userCoupleCode}\n\nBaixe o app e use este código para nos conectarmos como casal!`,
         title: 'Código do Casal - Nosso Diário',
       });
+      console.log('📤 Código compartilhado');
     } catch (error) {
       console.error('Error sharing code:', error);
     }
@@ -101,6 +140,7 @@ export default function CoupleSetupScreen() {
   const logout = async () => {
     try {
       await AsyncStorage.multiRemove(['auth_token', 'user_data']);
+      console.log('🚪 Logout do setup');
       router.replace('/');
     } catch (error) {
       console.error('Error logging out:', error);
@@ -110,88 +150,99 @@ export default function CoupleSetupScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="dark" />
-      <KeyboardAvoidingView 
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.container}
-      >
-        <ScrollView contentContainerStyle={styles.scrollContent}>
-          {/* Header */}
-          <View style={styles.header}>
-            <TouchableOpacity style={styles.logoutButton} onPress={logout}>
-              <Text style={styles.logoutText}>Sair</Text>
-            </TouchableOpacity>
-            
-            <View style={styles.logoContainer}>
-              <Text style={styles.heartIcon}>💕</Text>
-            </View>
-            
-            <Text style={styles.title}>Conectar com seu Parceiro(a)</Text>
-            <Text style={styles.subtitle}>Olá, {userName}! 💕</Text>
-          </View>
-
-          {/* Your Code Section */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Seu Código do Casal</Text>
-            <Text style={styles.sectionSubtitle}>
-              Compartilhe este código com seu parceiro(a) para se conectarem
-            </Text>
-            
-            <View style={styles.codeContainer}>
-              <Text style={styles.code}>{userCoupleCode}</Text>
+      <ResponsiveContainer>
+        <KeyboardAvoidingView 
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.container}
+        >
+          <ScrollView contentContainerStyle={styles.scrollContent}>
+            {/* Header */}
+            <View style={styles.header}>
+              <TouchableOpacity style={styles.logoutButton} onPress={logout}>
+                <Text style={styles.logoutText}>Sair</Text>
+              </TouchableOpacity>
+              
+              <View style={styles.logoContainer}>
+                <Text style={styles.heartIcon}>💕</Text>
+              </View>
+              
+              <Text style={styles.title}>Conectar com seu Parceiro(a)</Text>
+              <Text style={styles.subtitle}>Olá, {userName}! 💕</Text>
             </View>
 
-            <TouchableOpacity style={styles.shareButton} onPress={shareCode}>
-              <Text style={styles.shareButtonText}>Compartilhar Código</Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* Divider */}
-          <View style={styles.divider}>
-            <View style={styles.dividerLine} />
-            <Text style={styles.dividerText}>OU</Text>
-            <View style={styles.dividerLine} />
-          </View>
-
-          {/* Join Section */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Conectar com Código</Text>
-            <Text style={styles.sectionSubtitle}>
-              Digite o código que seu parceiro(a) compartilhou com você
-            </Text>
-
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>Código do Casal</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Digite o código (ex: ABC123)"
-                placeholderTextColor="#A66B7A"
-                value={coupleCode}
-                onChangeText={setCoupleCode}
-                maxLength={6}
-                autoCapitalize="characters"
-                autoCorrect={false}
-              />
-            </View>
-
-            <TouchableOpacity 
-              style={[styles.joinButton, isLoading && styles.joinButtonDisabled]}
-              onPress={joinCouple}
-              disabled={isLoading}
-            >
-              <Text style={styles.joinButtonText}>
-                {isLoading ? 'Conectando...' : 'Conectar como Casal'}
+            {/* Your Code Section */}
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Seu Código do Casal</Text>
+              <Text style={styles.sectionSubtitle}>
+                Compartilhe este código com seu parceiro(a) para se conectarem
               </Text>
-            </TouchableOpacity>
-          </View>
+              
+              <View style={styles.codeContainer}>
+                <Text style={styles.code}>{userCoupleCode}</Text>
+              </View>
 
-          {/* Info */}
-          <View style={styles.infoContainer}>
-            <Text style={styles.infoText}>
-              💡 Após a conexão, vocês poderão usar todas as funcionalidades do Nosso Diário juntos!
-            </Text>
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+              <TouchableOpacity style={styles.shareButton} onPress={shareCode}>
+                <Text style={styles.shareButtonText}>📤 Compartilhar Código</Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Divider */}
+            <View style={styles.divider}>
+              <View style={styles.dividerLine} />
+              <Text style={styles.dividerText}>OU</Text>
+              <View style={styles.dividerLine} />
+            </View>
+
+            {/* Join Section */}
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Conectar com Código</Text>
+              <Text style={styles.sectionSubtitle}>
+                Digite o código que seu parceiro(a) compartilhou com você
+              </Text>
+
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Código do Casal</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Digite o código (ex: ABC123)"
+                  placeholderTextColor="#A66B7A"
+                  value={coupleCode}
+                  onChangeText={setCoupleCode}
+                  maxLength={6}
+                  autoCapitalize="characters"
+                  autoCorrect={false}
+                />
+              </View>
+
+              <TouchableOpacity 
+                style={[styles.joinButton, isLoading && styles.joinButtonDisabled]}
+                onPress={joinCouple}
+                disabled={isLoading}
+              >
+                <Text style={styles.joinButtonText}>
+                  {isLoading ? '💕 Conectando...' : '👫 Conectar como Casal'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Info */}
+            <View style={styles.infoContainer}>
+              <Text style={styles.infoText}>
+                💡 Após a conexão, vocês poderão usar todas as funcionalidades do Nosso Diário juntos!
+              </Text>
+            </View>
+
+            {/* Instructions */}
+            <View style={styles.instructionsContainer}>
+              <Text style={styles.instructionsTitle}>📋 Como funciona:</Text>
+              <Text style={styles.instructionItem}>1. Compartilhe seu código com seu parceiro(a)</Text>
+              <Text style={styles.instructionItem}>2. Ou peça o código dele(a) e digite acima</Text>
+              <Text style={styles.instructionItem}>3. Após conectar, vocês acessarão o app juntos</Text>
+              <Text style={styles.instructionItem}>4. Explorem: Mural do Amor, Agenda, Diário e mais!</Text>
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </ResponsiveContainer>
     </SafeAreaView>
   );
 }
@@ -391,7 +442,7 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 16,
     marginTop: 16,
-    marginBottom: 40,
+    marginBottom: 24,
     borderWidth: 1,
     borderColor: '#F4E6EA',
   },
@@ -400,5 +451,26 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: 'center',
     lineHeight: 20,
+  },
+  instructionsContainer: {
+    backgroundColor: '#FFFFFF',
+    padding: 20,
+    borderRadius: 16,
+    marginBottom: 40,
+    borderWidth: 1,
+    borderColor: '#F4E6EA',
+  },
+  instructionsTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#8B4B6B',
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  instructionItem: {
+    fontSize: 14,
+    color: '#8B4B6B',
+    lineHeight: 22,
+    marginBottom: 8,
   },
 });
