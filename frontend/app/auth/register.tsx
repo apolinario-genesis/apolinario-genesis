@@ -128,8 +128,8 @@ export default function RegisterScreen() {
               <Text style={styles.heartIcon}>💕</Text>
             </View>
             
-            <Text style={styles.title}>Nosso Diário</Text>
-            <Text style={styles.subtitle}>Cadastrar</Text>
+            <Text style={styles.title}>NOSSO DIÁRIO</Text>
+            <Text style={styles.subtitle}>CADASTRAR</Text>
           </View>
 
           {/* Form */}
